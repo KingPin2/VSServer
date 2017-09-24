@@ -1,9 +1,9 @@
 package main.database;
 
-import main.database.objects.Board;
-import main.database.objects.Group;
-import main.database.objects.Message;
-import main.database.objects.User;
+import main.objects.Board;
+import main.objects.Group;
+import main.objects.Message;
+import main.objects.User;
 
 import java.util.ArrayList;
 

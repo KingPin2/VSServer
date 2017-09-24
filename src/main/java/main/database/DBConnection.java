@@ -43,7 +43,7 @@ public class DBConnection {
             }
             con = null;
             Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:main.main.database.db";
+            String url = "jdbc:sqlite:database.db";
             con = DriverManager.getConnection(url);
             con.setAutoCommit(false);
             statement = con.createStatement();
@@ -51,9 +51,9 @@ public class DBConnection {
         } catch ( Exception e ) {
             working = false;
             e.printStackTrace();
-            throw new DatabaseConnectionException("Could not open main.main.database.");
+            throw new DatabaseConnectionException("Could not open database.");
         }
-        System.out.println("Opened main.main.database successfully.");
+        System.out.println("Opened database successfully.");
     }
 
     /**
@@ -77,9 +77,9 @@ public class DBConnection {
             working = false;
         } catch (Exception e) {
             working = false;
-            throw new DatabaseConnectionException("Could not close main.main.database.");
+            throw new DatabaseConnectionException("Could not close database.");
         }
-        System.out.println("Closed main.main.database successfully.");
+        System.out.println("Closed database successfully.");
     }
 
     /**
@@ -136,7 +136,7 @@ public class DBConnection {
                 throw new DatabaseException("Can't execute query.");
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.main.database.");
+            throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
 
@@ -154,7 +154,7 @@ public class DBConnection {
                 throw new DatabaseException("Can't execute update.");
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.main.database.");
+            throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
 
@@ -177,7 +177,7 @@ public class DBConnection {
                 return null;
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.main.database.");
+            throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
 

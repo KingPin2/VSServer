@@ -1,10 +1,12 @@
-package main.database.objects;
+package main.objects;
+
+import java.io.Serializable;
 
 /**
  * @author D.Bergum
  * A user object as saved in main.database
  */
-public class User {
+public class User implements Serializable {
 
     private int id;
     private String name;

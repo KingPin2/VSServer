@@ -1,9 +1,11 @@
-package main.database.objects;
+package main.objects;
+
+import java.io.Serializable;
 
 /**
  * Created by Dominik on 18.08.2017.
  */
-public class Message {
+public class Message implements Serializable{
 
     private int id;
     private String message;

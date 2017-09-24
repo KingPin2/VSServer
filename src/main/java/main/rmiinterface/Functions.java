@@ -1,9 +1,9 @@
 package main.rmiinterface;
 
-import main.database.objects.Board;
-import main.database.objects.Group;
-import main.database.objects.Message;
-import main.database.objects.User;
+import main.objects.Board;
+import main.objects.Group;
+import main.objects.Message;
+import main.objects.User;
 
 import java.rmi.Remote;
 import java.util.ArrayList;
@@ -34,5 +34,7 @@ public interface Functions extends Remote
     ArrayList<Message> getMessagesByGroup(Group g) throws Exception;
     void saveMessage(Message message) throws Exception;
     User loginUser(String username, String password) throws Exception;
+    Group getGroupByName(String name) throws Exception;
+    void deleteMessage(Message m) throws Exception;
 
 }

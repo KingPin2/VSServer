@@ -1,11 +1,12 @@
-package main.database.objects;
+package main.objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Dominik on 18.08.2017.
  */
-public class Group {
+public class Group implements Serializable{
 
     private int id;
     private String name;
