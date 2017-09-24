@@ -1,6 +1,10 @@
 package main.rmiinterface;
 
-import main.objects.*;
+import main.database.objects.Board;
+import main.database.objects.Group;
+import main.database.objects.Message;
+import main.database.objects.User;
+
 import java.rmi.Remote;
 import java.util.ArrayList;
 

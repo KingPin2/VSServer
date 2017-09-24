@@ -1,4 +1,4 @@
-package main.objects;
+package main.database.objects;
 
 /**
  * Created by Dominik on 18.08.2017.

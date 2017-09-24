@@ -1,4 +1,4 @@
-package main.exceptions;
+package main.database.exceptions;
 
 /**
  * Created by Dominik on 08.07.2017.

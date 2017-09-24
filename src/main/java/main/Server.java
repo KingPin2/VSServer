@@ -3,17 +3,15 @@ package main;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import main.database.Database;
+import main.database.exceptions.DatabaseConnectionException;
+import main.database.objects.Board;
+import main.database.objects.Group;
+import main.database.objects.Message;
+import main.database.objects.User;
 import java.util.ArrayList;
 
-import main.database.Database;
-import main.exceptions.DatabaseConnectionException;
-
-import main.objects.Board;
-import main.objects.Group;
-import main.objects.Message;
-import main.objects.User;
 import main.rmiinterface.Functions;
-import main.threads.ServerThread;
 
 
 public class Server implements Functions
@@ -23,11 +21,10 @@ public class Server implements Functions
 
     public Server()
     {
-//        try{
-//            db = new Database();
-//        }catch (DatabaseConnectionException e){}
+        try{
+            db = new Database();
+        }catch (DatabaseConnectionException e){}
     }
-
 
     @Override
     public User getUserById(int id) throws Exception {
@@ -134,31 +131,13 @@ public class Server implements Functions
 
     public static void main(String args[])
     {
-
-//        Database database = null;
-//        try {
-//            database = new Database();
-//            try {
-//                ServerThread server = new ServerThread(database);
-//                server.run();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            } finally {
-//                database.closeDB();
-//            }
-//
-//        } catch (DatabaseConnectionException e) {
-//            e.printStackTrace();
-//        }
-
-
         try
         {
             Server obj = new Server();
             Functions stub = (Functions) UnicastRemoteObject.exportObject(obj, 0);
 
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
-            registry.rebind("Functions", stub);
+            registry.rebind("main.Functions", stub);
 
             System.err.println("main.Server laeuft");
         } catch (Exception e)

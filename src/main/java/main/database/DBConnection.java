@@ -1,14 +1,14 @@
 package main.database;
 
-import main.exceptions.DatabaseConnectionException;
-import main.exceptions.DatabaseException;
+import main.database.exceptions.DatabaseConnectionException;
+import main.database.exceptions.DatabaseException;
 
 import java.sql.*;
 
 /**
  * @author D.bergum
  *
- * Manage main.database connection
+ * Manage main.main.database connection
  */
 public class DBConnection {
 
@@ -26,7 +26,7 @@ public class DBConnection {
     }
 
     /**
-     * Connect to main.database
+     * Connect to main.main.database
      * @throws DatabaseConnectionException
      */
     protected void openDB() throws DatabaseConnectionException {
@@ -43,7 +43,7 @@ public class DBConnection {
             }
             con = null;
             Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:main.database.db";
+            String url = "jdbc:sqlite:main.main.database.db";
             con = DriverManager.getConnection(url);
             con.setAutoCommit(false);
             statement = con.createStatement();
@@ -51,13 +51,13 @@ public class DBConnection {
         } catch ( Exception e ) {
             working = false;
             e.printStackTrace();
-            throw new DatabaseConnectionException("Could not open main.database.");
+            throw new DatabaseConnectionException("Could not open main.main.database.");
         }
-        System.out.println("Opened main.database successfully.");
+        System.out.println("Opened main.main.database successfully.");
     }
 
     /**
-     * Close connection to main.database
+     * Close connection to main.main.database
      * @throws DatabaseConnectionException
      */
     protected void closeDB() throws DatabaseConnectionException {
@@ -77,9 +77,9 @@ public class DBConnection {
             working = false;
         } catch (Exception e) {
             working = false;
-            throw new DatabaseConnectionException("Could not close main.database.");
+            throw new DatabaseConnectionException("Could not close main.main.database.");
         }
-        System.out.println("Closed main.database successfully.");
+        System.out.println("Closed main.main.database successfully.");
     }
 
     /**
@@ -108,7 +108,7 @@ public class DBConnection {
     }
 
     /**
-     * Check if connected to main.database
+     * Check if connected to main.main.database
      * @return connected
      */
     protected boolean isOpen() {
@@ -136,7 +136,7 @@ public class DBConnection {
                 throw new DatabaseException("Can't execute query.");
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.database.");
+            throw  new DatabaseConnectionException("Not connected to main.main.database.");
         }
     }
 
@@ -154,7 +154,7 @@ public class DBConnection {
                 throw new DatabaseException("Can't execute update.");
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.database.");
+            throw  new DatabaseConnectionException("Not connected to main.main.database.");
         }
     }
 
@@ -177,7 +177,7 @@ public class DBConnection {
                 return null;
             }
         } else {
-            throw  new DatabaseConnectionException("Not connected to main.database.");
+            throw  new DatabaseConnectionException("Not connected to main.main.database.");
         }
     }
 

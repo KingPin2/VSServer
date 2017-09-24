@@ -1,26 +1,27 @@
 package main.database;
 
-import main.exceptions.DatabaseConnectionException;
-import main.exceptions.DatabaseObjectNotFoundException;
-import main.exceptions.DatabaseObjectNotSavedException;
-import main.objects.Board;
-import main.objects.Group;
-import main.objects.Message;
-import main.objects.User;
+import main.database.exceptions.DatabaseConnectionException;
+import main.database.exceptions.DatabaseObjectNotFoundException;
+import main.database.exceptions.DatabaseObjectNotSavedException;
+import main.database.objects.Board;
+import main.database.objects.Group;
+import main.database.objects.Message;
+import main.database.objects.User;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
  * @author D.Bergum
- * Manage object to main.database and main.database to object
+ *         Manage object to main.main.database and main.main.database to object
  */
 public class Database {
 
     DBConnection dbcon = null;
 
     /**
-     * Connect to main.database
+     * Connect to main.main.database
+     *
      * @throws DatabaseConnectionException
      */
     public Database() throws DatabaseConnectionException {
@@ -29,7 +30,7 @@ public class Database {
     }
 
     /**
-     *Connect to main.database
+     * Connect to main.main.database
      */
     public synchronized void openDB() {
         try {
@@ -42,7 +43,7 @@ public class Database {
     }
 
     /**
-     * Close connection to main.database
+     * Close connection to main.main.database
      */
     public synchronized void closeDB() {
         try {
@@ -53,7 +54,8 @@ public class Database {
     }
 
     /**
-     * Get a user from main.database by id
+     * Get a user from main.main.database by id
+     *
      * @param id UserId
      * @return User
      * @throws DatabaseObjectNotFoundException
@@ -61,7 +63,7 @@ public class Database {
      */
     public synchronized User getUserById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE id = '" + id + "';");
@@ -81,7 +83,8 @@ public class Database {
     }
 
     /**
-     * Get a user from main.database by username
+     * Get a user from main.main.database by username
+     *
      * @param username User Name
      * @return User
      * @throws DatabaseObjectNotFoundException
@@ -89,7 +92,7 @@ public class Database {
      */
     public synchronized User getUserByName(String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "';");
@@ -109,14 +112,15 @@ public class Database {
     }
 
     /**
-     * Get all users from main.database
+     * Get all users from main.main.database
+     *
      * @return Userlist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<User> getUsers() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<User> users = new ArrayList<User>();
@@ -137,7 +141,8 @@ public class Database {
     }
 
     /**
-     * Get a user by level from main.database
+     * Get a user by level from main.main.database
+     *
      * @param level UserLevel
      * @return User
      * @throws DatabaseObjectNotFoundException
@@ -145,7 +150,7 @@ public class Database {
      */
     public synchronized ArrayList<User> getUsersByLevel(int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<User> users = new ArrayList<User>();
@@ -166,7 +171,8 @@ public class Database {
     }
 
     /**
-     * Save a user in the main.database
+     * Save a user in the main.main.database
+     *
      * @param user User
      * @throws DatabaseObjectNotSavedException
      * @throws IllegalArgumentException
@@ -174,7 +180,7 @@ public class Database {
      */
     public synchronized void saveUser(User user) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         if (user != null) {
             try {
@@ -192,7 +198,8 @@ public class Database {
     }
 
     /**
-     * Get a board from main.database by id
+     * Get a board from main.main.database by id
+     *
      * @param id BoardId
      * @return Board
      * @throws DatabaseObjectNotFoundException
@@ -200,7 +207,7 @@ public class Database {
      */
     public synchronized Board getBoardById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'Board' WHERE id = '" + id + "';");
@@ -228,14 +235,15 @@ public class Database {
     }
 
     /**
-     * Get all boards from main.database
+     * Get all boards from main.main.database
+     *
      * @return Boardlist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<Board> getBoards() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Board> boards = new ArrayList<Board>();
@@ -243,7 +251,7 @@ public class Database {
             ArrayList<Integer> uIds = new ArrayList<Integer>();
             ResultSet rs = dbcon.execute("SELECT * FROM 'Board';");
             while (rs.next()) {
-                boards.add(new Board(rs.getInt("id"), rs.getString("name"), null,null));
+                boards.add(new Board(rs.getInt("id"), rs.getString("name"), null, null));
                 gIds.add(rs.getInt("groupId"));
                 uIds.add(rs.getInt("userId"));
             }
@@ -268,7 +276,8 @@ public class Database {
     }
 
     /**
-     * Save a board in the main.database
+     * Save a board in the main.main.database
+     *
      * @param board Board
      * @throws DatabaseObjectNotSavedException
      * @throws IllegalArgumentException
@@ -276,16 +285,16 @@ public class Database {
      */
     public synchronized void saveBoard(Board board) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         if (board != null) {
             try {
                 int uId = -1;
-                if (board.getUser() != null){
+                if (board.getUser() != null) {
                     uId = board.getUser().getID();
                 }
                 int gId = -1;
-                if (board.getGroup() != null){
+                if (board.getGroup() != null) {
                     gId = board.getGroup().getID();
                 }
                 if (board.getID() == -1) {
@@ -302,7 +311,8 @@ public class Database {
     }
 
     /**
-     * Get a group from main.database by id
+     * Get a group from main.main.database by id
+     *
      * @param id GroupId
      * @return Group
      * @throws DatabaseObjectNotFoundException
@@ -310,7 +320,7 @@ public class Database {
      */
     public synchronized Group getGroupById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'Group' WHERE id = '" + id + "';");
@@ -335,14 +345,15 @@ public class Database {
     }
 
     /**
-     * Get all groups for one user from main.database
+     * Get all groups for one user from main.main.database
+     *
      * @return Grouplist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<Group> getGroupsByUser(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Group> groups = new ArrayList<Group>();
@@ -359,7 +370,7 @@ public class Database {
             }
             rs2.close();
             dbcon.free();
-            for (Integer i : gIDs){
+            for (Integer i : gIDs) {
                 groups.add(getGroupById(i));
             }
             if (groups.size() > 0) {
@@ -373,14 +384,15 @@ public class Database {
     }
 
     /**
-     * Get all groups for one moderator from main.database
+     * Get all groups for one moderator from main.main.database
+     *
      * @return Grouplist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<Group> getGroupsByModerator(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Group> groups = new ArrayList<Group>();
@@ -391,7 +403,7 @@ public class Database {
             }
             rs.close();
             dbcon.free();
-            for (Integer i : gIDs){
+            for (Integer i : gIDs) {
                 groups.add(getGroupById(i));
             }
             if (groups.size() > 0) {
@@ -405,22 +417,24 @@ public class Database {
     }
 
     /**
-     * Get all groups from main.database
+     * Get all groups from main.main.database
+     *
      * @return Grouplist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<Group> getGroups() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Group> groups = new ArrayList<Group>();
             ArrayList<Integer> mIds = new ArrayList<Integer>();
             ResultSet rs = dbcon.execute("SELECT * FROM 'Group';");
             while (rs.next()) {
-                groups.add(new Group(rs.getInt("id"), rs.getString("name"), null,null));
-                mIds.add(rs.getInt("modId"));;
+                groups.add(new Group(rs.getInt("id"), rs.getString("name"), null, null));
+                mIds.add(rs.getInt("modId"));
+                ;
             }
             rs.close();
             dbcon.free();
@@ -441,7 +455,8 @@ public class Database {
     }
 
     /**
-     * Save a group in the main.database
+     * Save a group in the main.main.database
+     *
      * @param group Group
      * @throws DatabaseObjectNotSavedException
      * @throws IllegalArgumentException
@@ -449,7 +464,7 @@ public class Database {
      */
     public synchronized void saveGroup(Group group) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         if (group != null) {
             try {
@@ -482,6 +497,7 @@ public class Database {
 
     /**
      * Get all group members
+     *
      * @param groupId
      * @return groupMembers
      * @throws DatabaseConnectionException
@@ -489,7 +505,7 @@ public class Database {
      */
     public ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Integer> uIds = new ArrayList<Integer>();
@@ -517,27 +533,29 @@ public class Database {
 
     /**
      * Get all not group members
+     *
      * @param group Group
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(Group group){
+    public ArrayList<User> getUsersNotInGroup(Group group) {
         return getUsersNotInGroup(group.getID());
     }
 
     /**
      * Get all not group members
+     *
      * @param groupId Group id
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(int groupId){
+    public ArrayList<User> getUsersNotInGroup(int groupId) {
         try {
             ArrayList<User> members = getGroupMembers(groupId);
             ArrayList<User> users = getUsers();
             ArrayList<User> notInGroup = new ArrayList<User>();
-            for (User u : users){
+            for (User u : users) {
                 boolean found = false;
-                for (User m : members){
-                    if (u.getName().equalsIgnoreCase(m.getName())){
+                for (User m : members) {
+                    if (u.getName().equalsIgnoreCase(m.getName())) {
                         found = true;
                         break;
                     }
@@ -546,7 +564,7 @@ public class Database {
                     notInGroup.add(u);
                 }
             }
-            if (notInGroup.size() > 0){
+            if (notInGroup.size() > 0) {
                 return notInGroup;
             }
             return null;
@@ -558,12 +576,13 @@ public class Database {
 
     /**
      * Delete all group members
+     *
      * @param groupId
      * @throws DatabaseConnectionException
      */
     public void deleteGroupMembers(int groupId) throws DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             dbcon.execute("DELETE FROM 'Group_User' WHERE groupId = '" + groupId + "';");
@@ -574,6 +593,7 @@ public class Database {
 
     /**
      * Save all group members
+     *
      * @param groupId
      * @param groupMembers
      * @throws DatabaseConnectionException
@@ -581,7 +601,7 @@ public class Database {
      */
     public void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         if (groupMembers != null && groupMembers.size() > 0) {
             try {
@@ -595,7 +615,8 @@ public class Database {
     }
 
     /**
-     * Get a message from main.database by id
+     * Get a message from main.main.database by id
+     *
      * @param id MessageId
      * @return Message
      * @throws DatabaseObjectNotFoundException
@@ -603,7 +624,7 @@ public class Database {
      */
     public synchronized Message getMessageById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'Message' WHERE id = '" + id + "';");
@@ -631,7 +652,8 @@ public class Database {
     }
 
     /**
-     * Get all messages for a user from main.database
+     * Get all messages for a user from main.main.database
+     *
      * @param u User
      * @return Boardlist
      * @throws DatabaseObjectNotFoundException
@@ -639,7 +661,7 @@ public class Database {
      */
     public synchronized ArrayList<Message> getMessagesByUser(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Message> messages = new ArrayList<Message>();
@@ -650,7 +672,7 @@ public class Database {
             }
             rs.close();
             dbcon.free();
-            for (Integer i : mIds){
+            for (Integer i : mIds) {
                 messages.add(getMessageById(i));
             }
             if (messages.size() > 0) {
@@ -664,7 +686,8 @@ public class Database {
     }
 
     /**
-     * Get all messages for a group from main.database
+     * Get all messages for a group from main.main.database
+     *
      * @param g Group
      * @return Boardlist
      * @throws DatabaseObjectNotFoundException
@@ -672,7 +695,7 @@ public class Database {
      */
     public synchronized ArrayList<Message> getMessagesByGroup(Group g) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Message> messages = new ArrayList<Message>();
@@ -683,7 +706,7 @@ public class Database {
             }
             rs.close();
             dbcon.free();
-            for (Integer i : mIds){
+            for (Integer i : mIds) {
                 messages.add(getMessageById(i));
             }
             if (messages.size() > 0) {
@@ -697,14 +720,15 @@ public class Database {
     }
 
     /**
-     * Get all messages from main.database
+     * Get all messages from main.main.database
+     *
      * @return Boardlist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
      */
     public synchronized ArrayList<Message> getMessages() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         try {
             ArrayList<Message> messages = new ArrayList<Message>();
@@ -712,7 +736,7 @@ public class Database {
             ArrayList<Integer> aIds = new ArrayList<Integer>();
             ResultSet rs = dbcon.execute("SELECT * FROM 'Message';");
             while (rs.next()) {
-                messages.add(new Message(rs.getInt("id"), rs.getString("message"), null,null, rs.getLong("timestamp")));
+                messages.add(new Message(rs.getInt("id"), rs.getString("message"), null, null, rs.getLong("timestamp")));
                 gIds.add(rs.getInt("groupId"));
                 aIds.add(rs.getInt("authorId"));
             }
@@ -737,7 +761,8 @@ public class Database {
     }
 
     /**
-     * Save a message in the main.database
+     * Save a message in the main.main.database
+     *
      * @param message Message
      * @throws DatabaseObjectNotSavedException
      * @throws IllegalArgumentException
@@ -745,16 +770,16 @@ public class Database {
      */
     public synchronized void saveMessage(Message message) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to main.database.");
+            throw new DatabaseConnectionException("Not connected to main.main.database.");
         }
         if (message != null) {
             try {
                 int aId = -1;
-                if (message.getAuthor() != null){
+                if (message.getAuthor() != null) {
                     aId = message.getAuthor().getID();
                 }
                 int gId = -1;
-                if (message.getGroup() != null){
+                if (message.getGroup() != null) {
                     gId = message.getGroup().getID();
                 }
                 if (message.getID() == -1) {
@@ -772,24 +797,26 @@ public class Database {
 
     /**
      * Escape special chars in string to avoid sql injection
+     *
      * @param str
      * @return escaped string
      */
-    private String escapeSQLString(String str){
-        str = str.replace("'","''");
+    private String escapeSQLString(String str) {
+        str = str.replace("'", "''");
         return str;
     }
 
     /**
      * Checks username and password and returns the user, if login was succesfull
+     *
      * @param username
      * @param password
      * @return User or null
      */
-    public User loginUser(String username, String password){
+    public User loginUser(String username, String password) {
         try {
             User u = getUserByName(username);
-            if (u.checkPassword(password)){
+            if (u.checkPassword(password)) {
                 return u;
             }
         } catch (Exception e) {

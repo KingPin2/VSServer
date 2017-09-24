@@ -1,4 +1,4 @@
-package main.objects;
+package main.database.objects;
 
 /**
  * @author D.Bergum
