@@ -1,9 +1,6 @@
 package main.database;
 
-import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseObjectNotDeletedException;
-import main.database.exceptions.DatabaseObjectNotFoundException;
-import main.database.exceptions.DatabaseObjectNotSavedException;
+import main.database.exceptions.*;
 import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
@@ -37,6 +34,7 @@ public class Database {
         try {
             if (!dbcon.isOpen()) {
                 dbcon.openDB();
+                initDB();
             }
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
@@ -50,6 +48,19 @@ public class Database {
         try {
             dbcon.closeDB();
         } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void initDB(){
+        try {
+            dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+            dbcon.execute("CREATE TABLE IF NOT EXISTS `Group` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `modId` INTEGER NOT NULL );");
+            dbcon.execute("CREATE TABLE IF NOT EXISTS `Group_User` ( `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+            dbcon.execute("CREATE TABLE IF NOT EXISTS `Message` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `message` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL );");
+            dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
+            saveUser(ObjectFactory.createUser("Admin","admin",2));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

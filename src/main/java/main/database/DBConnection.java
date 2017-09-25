@@ -214,6 +214,16 @@ public class DBConnection {
                     executeUpdate(sql);
                     working = false;
                     return null;
+                case "CREATE":
+                    try {
+                        statement.executeUpdate(sql);
+                        con.commit();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        throw new DatabaseException("Error creating table");
+                    }
+                    working = false;
+                    return null;
                 default:
                     working = false;
                     throw new DatabaseException("Invalid query: " + pref);
