@@ -22,12 +22,9 @@ public interface Functions extends Remote
     Group getGroupById(int id) throws Exception;
     ArrayList<Group> getGroups() throws Exception;
     ArrayList <Group> getGroupsByUser(User u) throws Exception;
+    ArrayList <Group> getGroupsByModerator(User u) throws Exception;
     void saveGroup(Group group) throws Exception;
     ArrayList <User> getUsersNotInGroup(Group group) throws Exception;
-    ArrayList <User> getUsersNotInGroup(int groupID) throws Exception;
-    ArrayList<User> getGroupMembers(int groupId) throws Exception;
-    void deleteGroupMembers(int groupId) throws Exception;
-    void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws Exception;
     Message getMessageById(int id) throws Exception;
     ArrayList<Message> getMessagesByUser(User u) throws Exception;
     ArrayList<Message> getMessages() throws Exception;
@@ -36,5 +33,8 @@ public interface Functions extends Remote
     User loginUser(String username, String password) throws Exception;
     Group getGroupByName(String name) throws Exception;
     void deleteMessage(Message m) throws Exception;
+    void deleteUser(User u) throws Exception;
+    void deleteBoard(Board b) throws Exception;
+    void deleteGroup(Group g) throws Exception;
 
 }

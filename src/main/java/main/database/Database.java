@@ -619,7 +619,7 @@ public class Database {
      * @throws DatabaseConnectionException
      * @throws DatabaseObjectNotFoundException
      */
-    public ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
+    private synchronized ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -653,7 +653,7 @@ public class Database {
      * @param group Group
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(Group group) {
+    public synchronized ArrayList<User> getUsersNotInGroup(Group group) {
         return getUsersNotInGroup(group.getID());
     }
 
@@ -663,7 +663,7 @@ public class Database {
      * @param groupId Group id
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(int groupId) {
+    private synchronized ArrayList<User> getUsersNotInGroup(int groupId) {
         try {
             ArrayList<User> members = getGroupMembers(groupId);
             ArrayList<User> users = getUsers();
@@ -696,7 +696,7 @@ public class Database {
      * @param groupId
      * @throws DatabaseConnectionException
      */
-    public void deleteGroupMembers(int groupId) throws DatabaseConnectionException {
+    private synchronized void deleteGroupMembers(int groupId) throws DatabaseConnectionException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -715,7 +715,7 @@ public class Database {
      * @throws DatabaseConnectionException
      * @throws DatabaseObjectNotSavedException
      */
-    public void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
+    private synchronized void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -956,7 +956,7 @@ public class Database {
      * @param password
      * @return User or null
      */
-    public User loginUser(String username, String password) {
+    public synchronized User loginUser(String username, String password) {
         try {
             User u = getUserByName(username);
             if (u.checkPassword(password)) {

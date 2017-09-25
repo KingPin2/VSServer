@@ -125,6 +125,20 @@ public class Group implements Serializable{
         }
     }
 
+    /**
+     * Remove a member from the group
+     * @param member
+     */
+    public void removeMember(User member) {
+        try {
+            if (this.members != null && this.members.size() > 0){
+                this.members.remove(member);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public String toString() {
         return "Group{" +
