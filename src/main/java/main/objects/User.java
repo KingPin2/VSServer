@@ -133,7 +133,7 @@ public class User implements Serializable {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
+                ", password='********'" +
                 ", level=" + level +
                 '}';
     }

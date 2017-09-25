@@ -20,18 +20,8 @@ public class Server implements Functions
 
     private Database db;
 
-    public Server()
-    {
-        try{
-            db = new Database();
-            try {
-                System.out.println(db.getUsers());
-            } catch (DatabaseObjectNotFoundException e) {
-                e.printStackTrace();
-            }
-        }catch (DatabaseConnectionException e){
-            e.printStackTrace();
-        }
+    public Server() throws DatabaseConnectionException {
+        db = new Database();
     }
 
     @Override
@@ -179,13 +169,19 @@ public class Server implements Functions
     {
         try
         {
+            System.out.println("-------------------------------------------------");
+            System.out.println("");
+            System.out.println("Starting server...");
             Server obj = new Server();
             Functions stub = (Functions) UnicastRemoteObject.exportObject(obj, 0);
 
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             registry.rebind("Functions", stub);
 
-            System.out.println("Server laeuft");
+            System.out.println("");
+            System.out.println("-------------------------------------------------");
+            System.out.println("");
+            System.out.println("Server running...");
         } catch (Exception e)
         {
             System.err.println("Server exception: " + e.toString());

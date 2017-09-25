@@ -132,7 +132,6 @@ public class DBConnection {
             try {
                 return statement.executeQuery(sql);
             } catch (SQLException e) {
-                e.printStackTrace();
                 throw new DatabaseException("Can't execute query.");
             }
         } else {
@@ -219,8 +218,16 @@ public class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e){
-                        e.printStackTrace();
                         throw new DatabaseException("Error creating table");
+                    }
+                    working = false;
+                    return null;
+                case "DROP":
+                    try {
+                        statement.executeUpdate(sql);
+                        con.commit();
+                    } catch (Exception e){
+                        throw new DatabaseException("Error dropping table");
                     }
                     working = false;
                     return null;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * @author D.Bergum
- *         Manage object to database and database to object
+ * Manage object to database and database to object
  */
 public class Database {
 
@@ -52,14 +52,69 @@ public class Database {
         }
     }
 
-    public synchronized void initDB(){
+    private boolean testDatabase() {
         try {
-            dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
-            dbcon.execute("CREATE TABLE IF NOT EXISTS `Group` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `modId` INTEGER NOT NULL );");
-            dbcon.execute("CREATE TABLE IF NOT EXISTS `Group_User` ( `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
-            dbcon.execute("CREATE TABLE IF NOT EXISTS `Message` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `message` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL );");
-            dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
-            saveUser(ObjectFactory.createUser("Admin","admin",2));
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Group';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Board';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Message';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Group_User';");
+            rs.close();
+            dbcon.free();
+        } catch (Exception e) {
+            System.out.println("Database test FAILED.");
+            return false;
+        }
+        System.out.println("Database test SUCCEEDED.");
+        return true;
+    }
+
+    public synchronized void initDB() {
+        try {
+            if (!testDatabase()) {
+                System.out.println("Initialize database.");
+
+                try {
+                    dbcon.execute("DROP TABLE `Board`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Group`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Group_User`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Message`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `User`;");
+                } catch (Exception e) {
+                }
+
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Group` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `modId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Group_User` ( `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Message` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `message` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
+                saveUser(ObjectFactory.createUser("Admin", "admin", 2));
+                System.out.println("-----------------");
+                System.out.println("Default User:");
+                System.out.println("Username: Admin");
+                System.out.println("Passwort: admin");
+                System.out.println("-----------------");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -412,6 +467,7 @@ public class Database {
 
     /**
      * Get a group from database by name
+     *
      * @param name Groupname
      * @return Group
      * @throws DatabaseObjectNotFoundException
@@ -567,7 +623,7 @@ public class Database {
         }
         if (group != null) {
             try {
-                if (group.getModerator() != null){
+                if (group.getModerator() != null) {
                     group.addMember(group.getModerator());
                 }
                 int groupId = -1;
@@ -650,7 +706,7 @@ public class Database {
 
                 for (int i : uIds) {
                     User u = getUserById(i);
-                    if (members.contains(u)){
+                    if (members.contains(u)) {
                         members.remove(u);
                     }
                     members.add(u);
@@ -672,7 +728,7 @@ public class Database {
      * @return not group members (null, if found nothing)
      */
     public synchronized ArrayList<User> getUsersNotInGroup(Group group) {
-        if (group == null){
+        if (group == null) {
             return null;
         }
         return getUsersNotInGroup(group.getID());
