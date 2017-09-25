@@ -96,7 +96,7 @@ public class Database {
             throw new DatabaseConnectionException("Not connected to database.");
         }
         try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "' COLLATE NOCASE;");
             if (rs.next()) {
                 User u = new User(rs.getInt("id"), rs.getString("name"), rs.getString("password"), rs.getInt("level"));
                 rs.close();
@@ -411,7 +411,7 @@ public class Database {
             throw new DatabaseConnectionException("Not connected to database.");
         }
         try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'Group' WHERE name = '" + name + "';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'Group' WHERE name = '" + name + "' COLLATE NOCASE;");
             if (rs.next()) {
                 int mId = rs.getInt("modId");
                 Group g = new Group(rs.getInt("id"), rs.getString("name"), null, null);
@@ -556,6 +556,9 @@ public class Database {
         }
         if (group != null) {
             try {
+                if (group.getModerator() != null){
+                    group.addMember(group.getModerator());
+                }
                 int groupId = -1;
                 if (group.getID() == -1) {
                     ResultSet rs = dbcon.execute("INSERT INTO 'Group' (name, modId) VALUES ('" + escapeSQLString(group.getName()) + "','" + group.getModerator().getID() + "');");
@@ -635,7 +638,11 @@ public class Database {
                 ArrayList<User> members = new ArrayList<User>();
 
                 for (int i : uIds) {
-                    members.add(getUserById(i));
+                    User u = getUserById(i);
+                    if (members.contains(u)){
+                        members.remove(u);
+                    }
+                    members.add(u);
                 }
 
                 return members;
@@ -654,6 +661,9 @@ public class Database {
      * @return not group members (null, if found nothing)
      */
     public synchronized ArrayList<User> getUsersNotInGroup(Group group) {
+        if (group == null){
+            return null;
+        }
         return getUsersNotInGroup(group.getID());
     }
 
