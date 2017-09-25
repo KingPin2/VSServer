@@ -20,18 +20,8 @@ public class Server implements Functions
 
     private Database db;
 
-    public Server()
-    {
-        try{
-            db = new Database();
-            try {
-                System.out.println(db.getUsers());
-            } catch (DatabaseObjectNotFoundException e) {
-                e.printStackTrace();
-            }
-        }catch (DatabaseConnectionException e){
-            e.printStackTrace();
-        }
+    public Server() throws DatabaseConnectionException {
+        db = new Database();
     }
 
     @Override
@@ -96,6 +86,13 @@ public class Server implements Functions
         System.out.println("Get groups by user: " + u);
         return this.db.getGroupsByUser(u);
     }
+
+    @Override
+    public ArrayList<Group> getGroupsByModerator(User u) throws Exception {
+        System.out.println("Get groups by moderator: " + u);
+        return this.db.getGroupsByModerator(u);
+    }
+
     @Override
     public void saveGroup(Group group) throws Exception {
         System.out.println("Save group: " + group);
@@ -106,27 +103,6 @@ public class Server implements Functions
         System.out.println("Get user not in group: " + group);
         return this.db.getUsersNotInGroup(group);
     }
-    @Override
-    public ArrayList<User> getUsersNotInGroup(int groupID) throws Exception {
-        System.out.println("Get user not in group: " + groupID);
-        return this.db.getUsersNotInGroup(groupID);
-    }
-    @Override
-    public ArrayList<User> getGroupMembers(int groupId) throws Exception {
-        System.out.println("Get group members: " + groupId);
-        return this.db.getGroupMembers(groupId);
-    }
-    @Override
-    public void deleteGroupMembers(int groupId) throws Exception {
-        System.out.println("Delete group members: " + groupId);
-        this.db.deleteGroupMembers(groupId);
-    }
-    @Override
-    public void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws Exception {
-        System.out.println("Save group members: " + groupId);
-        this.db.saveGroupMembers(groupId, groupMembers);
-    }
-
     @Override
     public Message getMessageById(int id) throws Exception {
         System.out.println("Get message by id: " + id);
@@ -161,7 +137,7 @@ public class Server implements Functions
     @Override
     public Group getGroupByName(String name) throws Exception {
         System.out.println("Get group by name: " + name);
-        return getGroupByName(name);
+        return this.db.getGroupByName(name);
     }
 
     @Override
@@ -170,18 +146,42 @@ public class Server implements Functions
         this.db.deleteMessage(m);
     }
 
+    @Override
+    public void deleteUser(User u) throws Exception {
+        System.out.println("Delete user: " + u);
+        this.db.deleteUser(u);
+    }
+
+    @Override
+    public void deleteBoard(Board b) throws Exception {
+        System.out.println("Delete board: " + b);
+        this.db.deleteBoard(b);
+    }
+
+    @Override
+    public void deleteGroup(Group g) throws Exception {
+        System.out.println("Delete group: " + g);
+        this.db.deleteGroup(g);
+    }
+
 
     public static void main(String args[])
     {
         try
         {
+            System.out.println("-------------------------------------------------");
+            System.out.println("");
+            System.out.println("Starting server...");
             Server obj = new Server();
             Functions stub = (Functions) UnicastRemoteObject.exportObject(obj, 0);
 
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             registry.rebind("Functions", stub);
 
-            System.out.println("Server laeuft");
+            System.out.println("");
+            System.out.println("-------------------------------------------------");
+            System.out.println("");
+            System.out.println("Server running...");
         } catch (Exception e)
         {
             System.err.println("Server exception: " + e.toString());

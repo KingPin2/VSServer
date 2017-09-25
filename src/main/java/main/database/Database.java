@@ -1,9 +1,6 @@
 package main.database;
 
-import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseObjectNotDeletedException;
-import main.database.exceptions.DatabaseObjectNotFoundException;
-import main.database.exceptions.DatabaseObjectNotSavedException;
+import main.database.exceptions.*;
 import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
@@ -14,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * @author D.Bergum
- *         Manage object to database and database to object
+ * Manage object to database and database to object
  */
 public class Database {
 
@@ -37,6 +34,7 @@ public class Database {
         try {
             if (!dbcon.isOpen()) {
                 dbcon.openDB();
+                initDB();
             }
         } catch (DatabaseConnectionException e) {
             e.printStackTrace();
@@ -50,6 +48,74 @@ public class Database {
         try {
             dbcon.closeDB();
         } catch (DatabaseConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean testDatabase() {
+        try {
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Group';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Board';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Message';");
+            rs.close();
+            dbcon.free();
+            rs = dbcon.execute("SELECT * FROM 'Group_User';");
+            rs.close();
+            dbcon.free();
+        } catch (Exception e) {
+            System.out.println("Database test FAILED.");
+            return false;
+        }
+        System.out.println("Database test SUCCEEDED.");
+        return true;
+    }
+
+    public synchronized void initDB() {
+        try {
+            if (!testDatabase()) {
+                System.out.println("Initialize database.");
+
+                try {
+                    dbcon.execute("DROP TABLE `Board`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Group`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Group_User`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `Message`;");
+                } catch (Exception e) {
+                }
+                try {
+                    dbcon.execute("DROP TABLE `User`;");
+                } catch (Exception e) {
+                }
+
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Group` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `modId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Group_User` ( `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `Message` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `message` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL );");
+                dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
+                saveUser(ObjectFactory.createUser("Admin", "admin", 2));
+                System.out.println("-----------------");
+                System.out.println("Default User:");
+                System.out.println("Username: Admin");
+                System.out.println("Passwort: admin");
+                System.out.println("-----------------");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -96,7 +162,7 @@ public class Database {
             throw new DatabaseConnectionException("Not connected to database.");
         }
         try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "' COLLATE NOCASE;");
             if (rs.next()) {
                 User u = new User(rs.getInt("id"), rs.getString("name"), rs.getString("password"), rs.getInt("level"));
                 rs.close();
@@ -401,6 +467,7 @@ public class Database {
 
     /**
      * Get a group from database by name
+     *
      * @param name Groupname
      * @return Group
      * @throws DatabaseObjectNotFoundException
@@ -411,7 +478,7 @@ public class Database {
             throw new DatabaseConnectionException("Not connected to database.");
         }
         try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'Group' WHERE name = '" + name + "';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'Group' WHERE name = '" + name + "' COLLATE NOCASE;");
             if (rs.next()) {
                 int mId = rs.getInt("modId");
                 Group g = new Group(rs.getInt("id"), rs.getString("name"), null, null);
@@ -556,6 +623,9 @@ public class Database {
         }
         if (group != null) {
             try {
+                if (group.getModerator() != null) {
+                    group.addMember(group.getModerator());
+                }
                 int groupId = -1;
                 if (group.getID() == -1) {
                     ResultSet rs = dbcon.execute("INSERT INTO 'Group' (name, modId) VALUES ('" + escapeSQLString(group.getName()) + "','" + group.getModerator().getID() + "');");
@@ -619,7 +689,7 @@ public class Database {
      * @throws DatabaseConnectionException
      * @throws DatabaseObjectNotFoundException
      */
-    public ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
+    private synchronized ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -635,7 +705,11 @@ public class Database {
                 ArrayList<User> members = new ArrayList<User>();
 
                 for (int i : uIds) {
-                    members.add(getUserById(i));
+                    User u = getUserById(i);
+                    if (members.contains(u)) {
+                        members.remove(u);
+                    }
+                    members.add(u);
                 }
 
                 return members;
@@ -653,7 +727,10 @@ public class Database {
      * @param group Group
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(Group group) {
+    public synchronized ArrayList<User> getUsersNotInGroup(Group group) {
+        if (group == null) {
+            return null;
+        }
         return getUsersNotInGroup(group.getID());
     }
 
@@ -663,7 +740,7 @@ public class Database {
      * @param groupId Group id
      * @return not group members (null, if found nothing)
      */
-    public ArrayList<User> getUsersNotInGroup(int groupId) {
+    private synchronized ArrayList<User> getUsersNotInGroup(int groupId) {
         try {
             ArrayList<User> members = getGroupMembers(groupId);
             ArrayList<User> users = getUsers();
@@ -696,7 +773,7 @@ public class Database {
      * @param groupId
      * @throws DatabaseConnectionException
      */
-    public void deleteGroupMembers(int groupId) throws DatabaseConnectionException {
+    private synchronized void deleteGroupMembers(int groupId) throws DatabaseConnectionException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -715,7 +792,7 @@ public class Database {
      * @throws DatabaseConnectionException
      * @throws DatabaseObjectNotSavedException
      */
-    public void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
+    private synchronized void saveGroupMembers(int groupId, ArrayList<User> groupMembers) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -956,7 +1033,7 @@ public class Database {
      * @param password
      * @return User or null
      */
-    public User loginUser(String username, String password) {
+    public synchronized User loginUser(String username, String password) {
         try {
             User u = getUserByName(username);
             if (u.checkPassword(password)) {

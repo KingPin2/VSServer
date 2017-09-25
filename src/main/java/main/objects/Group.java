@@ -107,19 +107,46 @@ public class Group implements Serializable{
      * @param members
      */
     public void setMembers(ArrayList<User> members) {
-        this.members = members;
+        for (User m : members){
+            try {
+                addMember(m);
+            } catch (Exception e){
+                System.err.println("Could not add " + m.getName() + " to group member list.");
+            }
+        }
     }
 
     /**
      * Add a member to the group
      * @param member
      */
-    public void addMember(User member) {
-        try {
-            if (this.members == null) {
-                this.members = new ArrayList<User>();
+    public void addMember(User member) throws IllegalArgumentException {
+        if (member.getID() != -1) {
+            try {
+                if (this.members == null) {
+                    this.members = new ArrayList<User>();
+                }
+                if (this.members.contains(member)){
+                    this.members.remove(member);
+                }
+                this.members.add(member);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            this.members.add(member);
+        } else {
+            throw new IllegalArgumentException("Save user first in database!");
+        }
+    }
+
+    /**
+     * Remove a member from the group
+     * @param member
+     */
+    public void removeMember(User member) {
+        try {
+            if (this.members != null && this.members.size() > 0 && member.getID() != -1){
+                this.members.remove(member);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
