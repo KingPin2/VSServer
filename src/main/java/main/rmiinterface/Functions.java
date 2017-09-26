@@ -36,5 +36,6 @@ public interface Functions extends Remote
     void deleteUser(User u) throws Exception;
     void deleteBoard(Board b) throws Exception;
     void deleteGroup(Group g) throws Exception;
+    void registerClient(NotifyUpdate updateListener) throws Exception;
 
 }

@@ -1,5 +1,6 @@
 package main.database;
 
+import main.Server;
 import main.database.exceptions.*;
 import main.objects.Board;
 import main.objects.Group;
@@ -16,15 +17,17 @@ import java.util.ArrayList;
 public class Database {
 
     DBConnection dbcon = null;
+    Server server = null;
 
     /**
      * Connect to database
      *
      * @throws DatabaseConnectionException
      */
-    public Database() throws DatabaseConnectionException {
+    public Database(Server server) throws DatabaseConnectionException {
         dbcon = new DBConnection();
         this.openDB();
+        this.server = server;
     }
 
     /**
@@ -256,6 +259,7 @@ public class Database {
                 } else {
                     dbcon.execute("UPDATE 'User' SET name = '" + escapeSQLString(user.getName()) + "', password = '" + escapeSQLString(user.getPassword()) + "', level = '" + user.getLevel() + "' WHERE id = '" + user.getID() + "';");
                 }
+                server.notifyUserUpdated();
             } catch (Exception e) {
                 throw new DatabaseObjectNotSavedException();
             }
@@ -311,6 +315,7 @@ public class Database {
 
                     }
                     dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
+                    server.notifyUserUpdated();
                 }
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
@@ -705,6 +710,7 @@ public class Database {
                 if (groupId != -1) {
                     saveGroupMembers(groupId, group.getMembers());
                 }
+                server.notifyGroupUpdated();
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new DatabaseObjectNotSavedException();
@@ -742,6 +748,7 @@ public class Database {
 
                     dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
+                    server.notifyGroupUpdated();
                 }
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
@@ -1078,6 +1085,7 @@ public class Database {
                 } else {
                     dbcon.execute("UPDATE 'Message' SET message = '" + escapeSQLString(message.getMessage()) + "', authorId = '" + aId + "', groupId = '" + gId + "', timestamp = '" + message.getTimestamp() + "' WHERE id = '" + message.getID() + "';");
                 }
+                server.notifyMessageUpdated();
             } catch (Exception e) {
                 throw new DatabaseObjectNotSavedException();
             }
@@ -1105,6 +1113,7 @@ public class Database {
                 } else {
                     dbcon.execute("DELETE FROM 'Message' WHERE id = '" + message.getID() + "';");
                 }
+                server.notifyMessageUpdated();
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
             }
