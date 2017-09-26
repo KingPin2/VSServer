@@ -40,7 +40,7 @@ public class Database {
                 initDB();
             }
         } catch (DatabaseConnectionException e) {
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             e.printStackTrace();
         }
     }
@@ -56,6 +56,10 @@ public class Database {
         }
     }
 
+    /**
+     * Test if database is valid
+     * @return Database valid
+     */
     private boolean testDatabase() {
         try {
             ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
@@ -81,6 +85,9 @@ public class Database {
         return true;
     }
 
+    /**
+     * Initialize database if not valid
+     */
     public synchronized void initDB() {
         try {
             if (!testDatabase()) {
@@ -121,7 +128,7 @@ public class Database {
                 System.out.println("-----------------");
             }
         } catch (Exception e) {
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             e.printStackTrace();
         }
     }
@@ -151,7 +158,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -181,7 +188,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -211,7 +218,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -242,7 +249,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -275,7 +282,7 @@ public class Database {
                 }
                 server.notifyUserUpdated();
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -333,7 +340,7 @@ public class Database {
                     server.notifyUserUpdated();
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -382,7 +389,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -432,7 +439,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -465,7 +472,7 @@ public class Database {
                     dbcon.execute("UPDATE 'Board' SET name = '" + escapeSQLString(board.getName()) + "', userId = '" + uId + "', groupId = '" + gId + "' WHERE id = '" + board.getID() + "';");
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -493,7 +500,7 @@ public class Database {
                     dbcon.execute("DELETE FROM 'Board' WHERE id = '" + board.getID() + "';");
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -534,7 +541,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -572,7 +579,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -616,7 +623,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -654,7 +661,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -695,7 +702,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -738,7 +745,7 @@ public class Database {
                 server.notifyGroupUpdated();
             } catch (Exception e) {
                 e.printStackTrace();
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -777,7 +784,7 @@ public class Database {
                     server.notifyGroupUpdated();
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -825,7 +832,7 @@ public class Database {
             return null;
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             return null;
         }
     }
@@ -872,7 +879,7 @@ public class Database {
             return null;
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             return null;
         }
     }
@@ -890,7 +897,7 @@ public class Database {
         try {
             dbcon.execute("DELETE FROM 'Group_User' WHERE groupId = '" + groupId + "';");
         } catch (Exception e) {
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             dbcon.free();
         }
     }
@@ -913,7 +920,7 @@ public class Database {
                     dbcon.execute("INSERT INTO 'Group_User' (groupId, userId) VALUES ('" + groupId + "','" + gM.getID() + "');");
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         }
@@ -960,7 +967,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -999,7 +1006,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -1038,7 +1045,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -1088,7 +1095,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -1122,7 +1129,7 @@ public class Database {
                 }
                 server.notifyMessageUpdated();
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -1151,7 +1158,7 @@ public class Database {
                 }
                 server.notifyMessageUpdated();
             } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
+                server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -1184,7 +1191,7 @@ public class Database {
                 return u;
             }
         } catch (Exception e) {
-            server.log.addErrorToLog(e.toString());
+            server.getLogger().addErrorToLog(e.toString());
             e.printStackTrace();
         }
         return null;

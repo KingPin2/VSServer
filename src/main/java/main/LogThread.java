@@ -13,10 +13,17 @@ import java.net.URL;
 public class LogThread implements Runnable {
     String mes;
 
+    /**
+     * Initiate log thread
+     * @param mes
+     */
     public LogThread(String mes){
         this.mes = mes;
     }
 
+    /**
+     * Run log thread
+     */
     @Override
     public void run() {
         HttpURLConnection connection = null;

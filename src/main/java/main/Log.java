@@ -14,6 +14,9 @@ public class Log {
     private FileWriter logWriter;
     private boolean enabled = false;
 
+    /**
+     * Instantiate log
+     */
     public Log() {
         try {
             File directory = new File("log");
@@ -30,6 +33,9 @@ public class Log {
         ;
     }
 
+    /**
+     * Close log
+     */
     public void closeLog() {
         if (enabled) {
             try {
@@ -42,8 +48,12 @@ public class Log {
         }
     }
 
+    /**
+     * Add info message to log
+     * @param message
+     */
     public void addToLog(String message) {
-        String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n";
+        String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [INFO] " + message + "\n";
         executePost(mes);
         if (enabled) {
             try {
@@ -60,6 +70,32 @@ public class Log {
         }
     }
 
+    /**
+     * Add warning message to log
+     * @param message
+     */
+    public void addWarningToLog(String message) {
+        String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [WARNING] " + message + "\n";
+        executePost(mes);
+        if (enabled) {
+            try {
+                logWriter.write(mes);
+            } catch (Exception e) {
+                enabled = false;
+                try {
+                    logWriter.close();
+                } catch (Exception ex) {
+                }
+                System.out.println("Logging error!");
+                System.out.println("Log disabled!");
+            }
+        }
+    }
+
+    /**
+     * Add error message to log
+     * @param message
+     */
     public void addErrorToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
         executePost(mes);
@@ -78,6 +114,10 @@ public class Log {
         }
     }
 
+    /**
+     * Execute post to logserver
+     * @param urlParameters
+     */
     public static void executePost(String urlParameters) {
         LogThread lt = new LogThread(urlParameters);
         lt.run();

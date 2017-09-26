@@ -25,35 +25,77 @@ public class Server extends UnicastRemoteObject implements Functions
 {
 
     private Database db;
-    public Log log;
+    private Log log;
 
     private RandomString rs = new RandomString(15);
     private HashMap<String, NotifyUpdate> clients = new HashMap<String, NotifyUpdate>();
 
+    /**
+     * Server instance
+     * @param log Logging object
+     * @throws DatabaseConnectionException
+     * @throws RemoteException
+     */
     public Server(Log log) throws DatabaseConnectionException, RemoteException {
         super();
         this.log = log;
         db = new Database(this);
     }
 
+    /**
+     * Returns the logging object
+     * @return Log
+     */
+    public Log getLogger(){
+        return this.log;
+    }
+
+    /**
+     * Get a user by id
+     * @param id userId
+     * @return User
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
     @Override
     public User getUserById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get user by id: " + id);
         log.addToLog("Get user by id: " + id);
         return this.db.getUserById(id);
     }
+
+    /**
+     * Get a user by name
+     * @param username
+     * @return User
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
     @Override
     public User getUserByName(String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get user by name: " + username);
         log.addToLog("Get user by name: " + username);
         return this.db.getUserByName(username);
     }
+
+    /**
+     * Get all user
+     * @return Userlist
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
     @Override
     public ArrayList<User> getUsers() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get all user");
         log.addToLog("Get all user");
         return this.db.getUsers();
     }
+
+    /**
+     * Test
+     * @param testID
+     * @return Hallo Welt
+     */
     @Override
     public String test(int testID) 
     {
@@ -61,6 +103,14 @@ public class Server extends UnicastRemoteObject implements Functions
         log.addToLog("Test");
         return "Hallo Welt!";
     }
+
+    /**
+     * Get all user with specified level
+     * @param level
+     * @return Userlist
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
     @Override
     public ArrayList<User> getUsersByLevel(int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get user by level: " + level);
@@ -267,6 +317,9 @@ public class Server extends UnicastRemoteObject implements Functions
         }
     }
 
+    /**
+     * Notify all connected clients, that messages are updated
+     */
     public void notifyMessageUpdated() {
         for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
             try {
@@ -278,6 +331,9 @@ public class Server extends UnicastRemoteObject implements Functions
         }
     }
 
+    /**
+     * Notify all connected clients, that groups are updated
+     */
     public void notifyGroupUpdated() {
         for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
             try {
@@ -289,6 +345,9 @@ public class Server extends UnicastRemoteObject implements Functions
         }
     }
 
+    /**
+     * Notify all connected clients, that user are updated
+     */
     public void notifyUserUpdated() {
         for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
             try {
