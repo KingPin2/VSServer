@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 /**
  * @author D.Bergum
- * Manage object to database and database to object
+ *         Manage object to database and database to object
  */
 public class Database {
 
@@ -281,6 +281,35 @@ public class Database {
                 if (user.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
+                    try {
+                        ArrayList<Group> modGroups = getGroupsByModerator(user);
+                        if (modGroups.size() > 0) {
+                            throw new DatabaseUserIsModException();
+                        }
+                    } catch (DatabaseUserIsModException uim) {
+                        throw uim;
+                    } catch (Exception e) {
+
+                    }
+
+                    try {
+                        ArrayList<Group> groups = getGroupsByUser(user);
+                        for (Group g : groups ) {
+                            g.removeMember(user);
+                            saveGroup(g);
+                        }
+                    } catch (Exception e) {
+
+                    }
+
+                    try {
+                        ArrayList<Message> messages = getMessagesByUser(user);
+                        for (Message m : messages ) {
+                            deleteMessage(m);
+                        }
+                    } catch (Exception e) {
+
+                    }
                     dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
                 }
             } catch (Exception e) {
@@ -314,14 +343,14 @@ public class Database {
                 if (gId != -1) {
                     try {
                         b.setGroup(getGroupById(gId));
-                    } catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
                 if (uId != -1) {
                     try {
                         b.setUser(getUserById(uId));
-                    } catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
@@ -364,14 +393,14 @@ public class Database {
                     if (gIds.get(i) != -1) {
                         try {
                             boards.get(i).setGroup(getGroupById(gIds.get(i)));
-                        } catch (Exception e){
+                        } catch (Exception e) {
 
                         }
                     }
                     if (uIds.get(i) != -1) {
                         try {
                             boards.get(i).setUser(getUserById(uIds.get(i)));
-                        } catch (Exception e){
+                        } catch (Exception e) {
 
                         }
                     }
@@ -469,7 +498,7 @@ public class Database {
                 if (mId != -1) {
                     try {
                         g.setModerator(getUserById(mId));
-                    } catch (Exception e){
+                    } catch (Exception e) {
                     }
                 }
                 g.setMembers(getGroupMembers(g.getID()));
@@ -506,7 +535,7 @@ public class Database {
                 if (mId != -1) {
                     try {
                         g.setModerator(getUserById(mId));
-                    } catch (Exception e){
+                    } catch (Exception e) {
                     }
                 }
                 g.setMembers(getGroupMembers(g.getID()));
@@ -627,7 +656,7 @@ public class Database {
                     if (mIds.get(i) != -1) {
                         try {
                             groups.get(i).setModerator(getUserById(mIds.get(i)));
-                        } catch (Exception e){
+                        } catch (Exception e) {
                         }
                     }
                     groups.get(i).setMembers(getGroupMembers(groups.get(i).getID()));
@@ -702,6 +731,15 @@ public class Database {
                 if (group.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
+                    try {
+                        ArrayList<Message> messages = getMessagesByGroup(group);
+                        for (Message m : messages ) {
+                            deleteMessage(m);
+                        }
+                    } catch (Exception e) {
+
+                    }
+
                     dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
                 }
@@ -743,7 +781,7 @@ public class Database {
                             members.remove(u);
                         }
                         members.add(u);
-                    } catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
@@ -864,16 +902,16 @@ public class Database {
                 rs.close();
                 dbcon.free();
                 if (gId != -1) {
-                    try{
-                    m.setGroup(getGroupById(gId));
-                    } catch (Exception e){
+                    try {
+                        m.setGroup(getGroupById(gId));
+                    } catch (Exception e) {
 
                     }
                 }
                 if (aId != -1) {
                     try {
                         m.setAuthor(getUserById(aId));
-                    } catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
@@ -912,7 +950,7 @@ public class Database {
             for (Integer i : mIds) {
                 try {
                     messages.add(getMessageById(i));
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -950,7 +988,7 @@ public class Database {
             for (Integer i : mIds) {
                 try {
                     messages.add(getMessageById(i));
-                } catch (Exception e){
+                } catch (Exception e) {
 
                 }
             }
@@ -992,7 +1030,7 @@ public class Database {
                     if (gIds.get(i) != -1) {
                         try {
                             messages.get(i).setGroup(getGroupById(gIds.get(i)));
-                        } catch (Exception e){
+                        } catch (Exception e) {
 
                         }
                     }
