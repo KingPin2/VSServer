@@ -239,7 +239,12 @@ public class Server extends UnicastRemoteObject implements Functions
             System.out.println("Starting server...");
             log.addToLog("Starting server");
             Server obj = new Server(log);
-            Functions stub = (Functions) UnicastRemoteObject.exportObject(obj, 0);
+            Functions stub;
+            try {
+                stub = (Functions) UnicastRemoteObject.exportObject(obj, 0);
+            } catch (Exception e) {
+                stub = (Functions) UnicastRemoteObject.toStub(obj);
+            }
 
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             registry.rebind("Functions", stub);
