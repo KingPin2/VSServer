@@ -69,7 +69,7 @@ public class User implements Serializable {
      * @return password equals
      */
     public boolean checkPassword(String password){
-        return this.password.equalsIgnoreCase(password);
+        return this.password.equals(password);
     }
 
     /**
