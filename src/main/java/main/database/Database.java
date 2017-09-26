@@ -281,7 +281,7 @@ public class Database {
                 if (user.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
-                    dbcon.execute("DELETE 'User' WHERE id = '" + user.getID() + "';");
+                    dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
                 }
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
@@ -421,7 +421,7 @@ public class Database {
                 if (board.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
-                    dbcon.execute("DELETE 'Board' WHERE id = '" + board.getID() + "';");
+                    dbcon.execute("DELETE FROM 'Board' WHERE id = '" + board.getID() + "';");
                 }
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
@@ -669,7 +669,7 @@ public class Database {
                 if (group.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
-                    dbcon.execute("DELETE 'Group' WHERE id = '" + group.getID() + "';");
+                    dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
                 }
             } catch (Exception e) {
@@ -1004,7 +1004,7 @@ public class Database {
                 if (message.getID() == -1) {
                     throw new DatabaseObjectNotDeletedException();
                 } else {
-                    dbcon.execute("DELETE 'Message' WHERE id = '" + message.getID() + "';");
+                    dbcon.execute("DELETE FROM 'Message' WHERE id = '" + message.getID() + "';");
                 }
             } catch (Exception e) {
                 throw new DatabaseObjectNotDeletedException();
