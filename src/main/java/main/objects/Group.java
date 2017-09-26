@@ -107,11 +107,13 @@ public class Group implements Serializable{
      * @param members
      */
     public void setMembers(ArrayList<User> members) {
-        for (User m : members){
-            try {
-                addMember(m);
-            } catch (Exception e){
-                System.err.println("Could not add " + m.getName() + " to group member list.");
+        if (members != null) {
+            for (User m : members) {
+                try {
+                    addMember(m);
+                } catch (Exception e) {
+                    System.err.println("Could not add " + m.getName() + " to group member list.");
+                }
             }
         }
     }
@@ -121,20 +123,24 @@ public class Group implements Serializable{
      * @param member
      */
     public void addMember(User member) throws IllegalArgumentException {
-        if (member.getID() != -1) {
-            try {
-                if (this.members == null) {
-                    this.members = new ArrayList<User>();
+        if (member != null) {
+            if (member.getID() != -1) {
+                try {
+                    if (this.members == null) {
+                        this.members = new ArrayList<User>();
+                    }
+                    if (this.members.contains(member)) {
+                        this.members.remove(member);
+                    }
+                    this.members.add(member);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                if (this.members.contains(member)){
-                    this.members.remove(member);
-                }
-                this.members.add(member);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                throw new IllegalArgumentException("Save user first in database!");
             }
         } else {
-            throw new IllegalArgumentException("Save user first in database!");
+            throw new IllegalArgumentException("User null.");
         }
     }
 
