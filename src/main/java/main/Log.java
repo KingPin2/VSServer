@@ -43,11 +43,11 @@ public class Log {
     }
 
     public void addToLog(String message) {
+        String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n";
+        executePost(mes);
         if (enabled) {
             try {
-                String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n";
                 logWriter.write(mes);
-                executePost(mes);
             } catch (Exception e) {
                 enabled = false;
                 try {
@@ -61,11 +61,11 @@ public class Log {
     }
 
     public void addErrorToLog(String message) {
+        String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
+        executePost(mes);
         if (enabled) {
             try {
-                String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
                 logWriter.write(mes);
-                executePost(mes);
             } catch (Exception e) {
                 enabled = false;
                 try {
