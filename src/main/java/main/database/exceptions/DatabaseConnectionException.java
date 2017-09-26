@@ -1,9 +1,11 @@
 package main.database.exceptions;
 
+import java.io.Serializable;
+
 /**
  * Created by Dominik on 08.07.2017.
  */
-public class DatabaseConnectionException extends Exception {
+public class DatabaseConnectionException extends Exception implements Serializable{
     public DatabaseConnectionException(String message){
         super(message);
     }
