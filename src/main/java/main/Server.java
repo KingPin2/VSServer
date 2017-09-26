@@ -203,9 +203,9 @@ public class Server extends UnicastRemoteObject implements Functions
 
     @Override
     public String connect(NotifyUpdate upd) throws RemoteException {
-        String random = "";
+        String random = rs.nextString();
 
-        while (random.isEmpty() && clients.containsKey(random)){
+        while (clients.containsKey(random)){
             random = rs.nextString();
         }
 
