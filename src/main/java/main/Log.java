@@ -78,39 +78,9 @@ public class Log {
         }
     }
 
-    public static String executePost(String urlParameters) {
-        HttpURLConnection connection = null;
-        String targetURL = "http://log.bergum.de/serverLog.php";
+    public static void executePost(String urlParameters) {
+        LogThread lt = new LogThread(urlParameters);
+        lt.run();
 
-        try {
-            //Create connection
-            URL url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoOutput(true);
-
-            //Send request
-            PrintStream ps = new PrintStream(connection.getOutputStream());
-            // send your parameters to your site
-            ps.print("logMes=" + urlParameters);
-
-            //Get Response
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-            String line;
-            while ((line = rd.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            rd.close();
-            System.out.println(response.toString());
-            return response.toString();
-        } catch (Exception e) {
-            return null;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
     }
 }
