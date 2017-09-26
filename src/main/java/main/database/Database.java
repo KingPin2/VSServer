@@ -589,7 +589,6 @@ public class Database {
             while (rs.next()) {
                 groups.add(new Group(rs.getInt("id"), rs.getString("name"), null, null));
                 mIds.add(rs.getInt("modId"));
-                ;
             }
             rs.close();
             dbcon.free();
