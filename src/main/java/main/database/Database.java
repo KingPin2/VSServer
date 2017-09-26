@@ -113,6 +113,7 @@ public class Database {
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Message` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `message` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `groupId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL );");
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
                 saveUser(ObjectFactory.createUser("Admin", "admin", 2));
+                saveGroup(ObjectFactory.createEmptyGroup("Broadcast", getUserByName("Admin")));
                 System.out.println("-----------------");
                 System.out.println("Default User:");
                 System.out.println("Username: Admin");
@@ -264,6 +265,13 @@ public class Database {
                     dbcon.execute("INSERT INTO 'User' (name, password, level) VALUES ('" + escapeSQLString(user.getName()) + "','" + escapeSQLString(user.getPassword()) + "','" + user.getLevel() + "');");
                 } else {
                     dbcon.execute("UPDATE 'User' SET name = '" + escapeSQLString(user.getName()) + "', password = '" + escapeSQLString(user.getPassword()) + "', level = '" + user.getLevel() + "' WHERE id = '" + user.getID() + "';");
+                }
+                try {
+                    Group broadcast = getGroupByName("Broadcast");
+                    broadcast.addMember(getUserByName(user.getName()));
+                    saveGroup(broadcast);
+                } catch (Exception e){
+
                 }
                 server.notifyUserUpdated();
             } catch (Exception e) {
