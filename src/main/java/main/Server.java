@@ -10,7 +10,6 @@ import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
 import main.rmiinterface.Functions;
-import main.rmiinterface.NotifyUpdate;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -22,10 +21,7 @@ public class Server implements Functions
 {
 
     private Database db;
-    private Log log;
-
-    private boolean working = false;
-    private ArrayList<NotifyUpdate> updateListener = new ArrayList<NotifyUpdate>();
+    public Log log;
 
     public Server(Log log) throws DatabaseConnectionException {
         this.log = log;
@@ -33,84 +29,15 @@ public class Server implements Functions
     }
 
     public void notifyUserUpdated(){
-        Thread notifyThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (working) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e){
-                    }
-                }
-                working = true;
-                for (NotifyUpdate nu : updateListener) {
-                    try{
-                        nu.onUserUpdated();
-                    } catch (Exception e) {
-
-                    }
-                }
-                working = false;
-            }
-        });
-    }
-
-    public void notifyGroupUpdated(){
-        Thread notifyThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (working) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e){
-                    }
-                }
-                working = true;
-                for (NotifyUpdate nu : updateListener) {
-                    try{
-                        nu.onGroupUpdated();
-                    } catch (Exception e) {
-
-                    }
-                }
-                working = false;
-            }
-        });
+        //
     }
 
     public void notifyMessageUpdated(){
-        Thread notifyThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (working) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e){
-                    }
-                }
-                working = true;
-                for (NotifyUpdate nu : updateListener) {
-                    try{
-                        nu.onMessageUpdated();
-                    } catch (Exception e) {
-
-                    }
-                }
-                working = false;
-            }
-        });
+        //
     }
 
-    public void addUpdateListener(NotifyUpdate nu){
-        while (working) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e){
-            }
-        }
-        working = true;
-        this.updateListener.add(nu);
-        working = false;
+    public void notifyGroupUpdated(){
+        //
     }
 
     @Override
@@ -276,13 +203,6 @@ public class Server implements Functions
         System.out.println("Delete group: " + g);
         log.addToLog("Delete group: " + g);
         this.db.deleteGroup(g);
-    }
-
-    @Override
-    public void registerClient(NotifyUpdate updateListener)  {
-        System.out.println("Registered update listener");
-        log.addToLog("Registered update listener");
-        addUpdateListener(updateListener);
     }
 
 

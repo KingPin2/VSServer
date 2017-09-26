@@ -41,6 +41,5 @@ public interface Functions extends Remote
     void deleteUser(User u) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
     void deleteBoard(Board b) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
     void deleteGroup(Group g) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
-    void registerClient(NotifyUpdate updateListener) throws RemoteException;
 
 }

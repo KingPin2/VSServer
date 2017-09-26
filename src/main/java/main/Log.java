@@ -1,8 +1,8 @@
 package main;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -22,6 +22,7 @@ public class Log {
             }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
             enabled = true;
+            System.out.println("Log ok!");
         } catch (Exception e) {
             System.out.println("Could not open log!");
             System.out.println("Log disabled!");
@@ -44,7 +45,9 @@ public class Log {
     public void addToLog(String message) {
         if (enabled) {
             try {
-                logWriter.write(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n");
+                String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n";
+                logWriter.write(mes);
+                executePost(mes);
             } catch (Exception e) {
                 enabled = false;
                 try {
@@ -60,7 +63,9 @@ public class Log {
     public void addErrorToLog(String message) {
         if (enabled) {
             try {
-                logWriter.write(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n");
+                String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
+                logWriter.write(mes);
+                executePost(mes);
             } catch (Exception e) {
                 enabled = false;
                 try {
@@ -69,6 +74,42 @@ public class Log {
                 }
                 System.out.println("Logging error!");
                 System.out.println("Log disabled!");
+            }
+        }
+    }
+
+    public static String executePost(String urlParameters) {
+        HttpURLConnection connection = null;
+        String targetURL = "http://log.bergum.de/serverLog.php";
+
+        try {
+            //Create connection
+            URL url = new URL(targetURL);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+
+            //Send request
+            PrintStream ps = new PrintStream(connection.getOutputStream());
+            // send your parameters to your site
+            ps.print("logMes=" + urlParameters);
+
+            //Get Response
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            System.out.println(response.toString());
+            return response.toString();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
             }
         }
     }
