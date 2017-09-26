@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,10 @@ public class Log {
 
     public Log() {
         try {
+            File directory = new File("log");
+            if (! directory.exists()){
+                directory.mkdir();
+            }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
             enabled = true;
         } catch (IOException e) {
