@@ -22,7 +22,7 @@ public class Log {
             }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
             enabled = true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Could not open log!");
             System.out.println("Log disabled!");
         }
@@ -33,8 +33,10 @@ public class Log {
         if (enabled) {
             try {
                 logWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                enabled = false;
+                System.out.println("Logging error!");
+                System.out.println("Log disabled!");
             }
         }
     }
@@ -43,8 +45,14 @@ public class Log {
         if (enabled) {
             try {
                 logWriter.write(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": " + message + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                enabled = false;
+                try {
+                    logWriter.close();
+                } catch (Exception ex) {
+                }
+                System.out.println("Logging error!");
+                System.out.println("Log disabled!");
             }
         }
     }
@@ -53,8 +61,14 @@ public class Log {
         if (enabled) {
             try {
                 logWriter.write(new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                enabled = false;
+                try {
+                    logWriter.close();
+                } catch (Exception ex) {
+                }
+                System.out.println("Logging error!");
+                System.out.println("Log disabled!");
             }
         }
     }

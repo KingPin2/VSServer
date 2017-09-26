@@ -127,8 +127,8 @@ public class Server implements Functions
     }
     @Override
     public ArrayList<User> getUsers() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
-        System.out.println("Login all user");
-        log.addToLog("Login all user");
+        System.out.println("Get all user");
+        log.addToLog("Get all user");
         return this.db.getUsers();
     }
     @Override

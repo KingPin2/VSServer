@@ -3,20 +3,25 @@ package main.rmiconnections;
 import main.rmiinterface.NotifyUpdate;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-public class updateImplementation implements NotifyUpdate , Serializable{
+public class updateImplementation extends UnicastRemoteObject implements NotifyUpdate , Serializable{
+
+    protected updateImplementation() throws RemoteException {
+    }
+
     @Override
     public void onUserUpdated() {
-        System.out.println("onUserUpdate");
     }
 
     @Override
     public void onMessageUpdated() {
-        System.out.println("onMessageUpdate");
+
     }
 
     @Override
     public void onGroupUpdated() {
-        System.out.println("onGroupUpdate");
+
     }
 }
