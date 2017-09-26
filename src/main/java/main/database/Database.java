@@ -312,10 +312,18 @@ public class Database {
                 rs.close();
                 dbcon.free();
                 if (gId != -1) {
-                    b.setGroup(getGroupById(gId));
+                    try {
+                        b.setGroup(getGroupById(gId));
+                    } catch (Exception e){
+
+                    }
                 }
                 if (uId != -1) {
-                    b.setUser(getUserById(uId));
+                    try {
+                        b.setUser(getUserById(uId));
+                    } catch (Exception e){
+
+                    }
                 }
                 return b;
             } else {
@@ -354,10 +362,18 @@ public class Database {
             if (boards.size() > 0) {
                 for (int i = 0; i < boards.size(); i++) {
                     if (gIds.get(i) != -1) {
-                        boards.get(i).setGroup(getGroupById(gIds.get(i)));
+                        try {
+                            boards.get(i).setGroup(getGroupById(gIds.get(i)));
+                        } catch (Exception e){
+
+                        }
                     }
                     if (uIds.get(i) != -1) {
-                        boards.get(i).setUser(getUserById(uIds.get(i)));
+                        try {
+                            boards.get(i).setUser(getUserById(uIds.get(i)));
+                        } catch (Exception e){
+
+                        }
                     }
                 }
                 return boards;
@@ -451,7 +467,10 @@ public class Database {
                 rs.close();
                 dbcon.free();
                 if (mId != -1) {
-                    g.setModerator(getUserById(mId));
+                    try {
+                        g.setModerator(getUserById(mId));
+                    } catch (Exception e){
+                    }
                 }
                 g.setMembers(getGroupMembers(g.getID()));
                 return g;
@@ -485,7 +504,10 @@ public class Database {
                 rs.close();
                 dbcon.free();
                 if (mId != -1) {
-                    g.setModerator(getUserById(mId));
+                    try {
+                        g.setModerator(getUserById(mId));
+                    } catch (Exception e){
+                    }
                 }
                 g.setMembers(getGroupMembers(g.getID()));
                 return g;
@@ -526,7 +548,11 @@ public class Database {
             rs2.close();
             dbcon.free();
             for (Integer i : gIDs) {
-                groups.add(getGroupById(i));
+                try {
+                    groups.add(getGroupById(i));
+                } catch (Exception e) {
+
+                }
             }
             if (groups.size() > 0) {
                 return groups;
@@ -559,7 +585,11 @@ public class Database {
             rs.close();
             dbcon.free();
             for (Integer i : gIDs) {
-                groups.add(getGroupById(i));
+                try {
+                    groups.add(getGroupById(i));
+                } catch (Exception e) {
+
+                }
             }
             if (groups.size() > 0) {
                 return groups;
@@ -595,7 +625,10 @@ public class Database {
             if (groups.size() > 0) {
                 for (int i = 0; i < groups.size(); i++) {
                     if (mIds.get(i) != -1) {
-                        groups.get(i).setModerator(getUserById(mIds.get(i)));
+                        try {
+                            groups.get(i).setModerator(getUserById(mIds.get(i)));
+                        } catch (Exception e){
+                        }
                     }
                     groups.get(i).setMembers(getGroupMembers(groups.get(i).getID()));
                 }
@@ -704,11 +737,15 @@ public class Database {
                 ArrayList<User> members = new ArrayList<User>();
 
                 for (int i : uIds) {
-                    User u = getUserById(i);
-                    if (members.contains(u)) {
-                        members.remove(u);
+                    try {
+                        User u = getUserById(i);
+                        if (members.contains(u)) {
+                            members.remove(u);
+                        }
+                        members.add(u);
+                    } catch (Exception e){
+
                     }
-                    members.add(u);
                 }
 
                 return members;
@@ -827,10 +864,18 @@ public class Database {
                 rs.close();
                 dbcon.free();
                 if (gId != -1) {
+                    try{
                     m.setGroup(getGroupById(gId));
+                    } catch (Exception e){
+
+                    }
                 }
                 if (aId != -1) {
-                    m.setAuthor(getUserById(aId));
+                    try {
+                        m.setAuthor(getUserById(aId));
+                    } catch (Exception e){
+
+                    }
                 }
                 return m;
             } else {
@@ -865,7 +910,11 @@ public class Database {
             rs.close();
             dbcon.free();
             for (Integer i : mIds) {
-                messages.add(getMessageById(i));
+                try {
+                    messages.add(getMessageById(i));
+                }catch (Exception e){
+
+                }
             }
             if (messages.size() > 0) {
                 return messages;
@@ -899,7 +948,11 @@ public class Database {
             rs.close();
             dbcon.free();
             for (Integer i : mIds) {
-                messages.add(getMessageById(i));
+                try {
+                    messages.add(getMessageById(i));
+                } catch (Exception e){
+
+                }
             }
             if (messages.size() > 0) {
                 return messages;
@@ -937,10 +990,18 @@ public class Database {
             if (messages.size() > 0) {
                 for (int i = 0; i < messages.size(); i++) {
                     if (gIds.get(i) != -1) {
-                        messages.get(i).setGroup(getGroupById(gIds.get(i)));
+                        try {
+                            messages.get(i).setGroup(getGroupById(gIds.get(i)));
+                        } catch (Exception e){
+
+                        }
                     }
                     if (aIds.get(i) != -1) {
-                        messages.get(i).setAuthor(getUserById(aIds.get(i)));
+                        try {
+                            messages.get(i).setAuthor(getUserById(aIds.get(i)));
+                        } catch (Exception e) {
+
+                        }
                     }
                 }
                 return messages;

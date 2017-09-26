@@ -2,7 +2,6 @@ package main;
 
 import main.database.Database;
 import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseObjectNotFoundException;
 import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;

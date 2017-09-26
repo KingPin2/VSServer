@@ -150,7 +150,7 @@ public class Group implements Serializable{
      */
     public void removeMember(User member) {
         try {
-            if (this.members != null && this.members.size() > 0 && member.getID() != -1){
+            if (this.members != null && this.members.size() > 0 && member != null && member.getID() != -1){
                 this.members.remove(member);
             }
         } catch (Exception e) {
