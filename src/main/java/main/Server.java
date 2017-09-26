@@ -10,34 +10,30 @@ import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
 import main.rmiinterface.Functions;
+import main.rmiinterface.NotifyUpdate;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class Server implements Functions
+public class Server extends UnicastRemoteObject implements Functions
 {
 
     private Database db;
     public Log log;
 
-    public Server(Log log) throws DatabaseConnectionException {
+    private RandomString rs = new RandomString(15);
+    private HashMap<String, NotifyUpdate> clients = new HashMap<String, NotifyUpdate>();
+
+    public Server(Log log) throws DatabaseConnectionException, RemoteException {
+        super();
         this.log = log;
         db = new Database(this);
-    }
-
-    public void notifyUserUpdated(){
-        //
-    }
-
-    public void notifyMessageUpdated(){
-        //
-    }
-
-    public void notifyGroupUpdated(){
-        //
     }
 
     @Override
@@ -205,6 +201,31 @@ public class Server implements Functions
         this.db.deleteGroup(g);
     }
 
+    @Override
+    public String connect(NotifyUpdate upd) throws RemoteException {
+        String random = "";
+
+        while (random.isEmpty() && clients.containsKey(random)){
+            random = rs.nextString();
+        }
+
+        System.out.println("Connect: " + random);
+        clients.put(random,upd);
+        log.addToLog("Connect: " + random);
+        return random;
+    }
+
+    @Override
+    public void disconnect(String id) throws RemoteException {
+        try {
+            System.out.println("Disconnect: " + id);
+            clients.remove(id);
+            log.addToLog("Disconnect: " + id);
+        } catch (Exception e){
+            log.addErrorToLog(e.toString());
+        }
+    }
+
 
     public static void main(String args[])
     {
@@ -241,4 +262,36 @@ public class Server implements Functions
         }
     }
 
+    public void notifyMessageUpdated() {
+        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
+            try {
+                ent.getValue().onUpdateMessage();
+            } catch (Exception e) {
+                log.addErrorToLog(e.toString());
+                clients.remove(ent.getKey());
+            }
+        }
+    }
+
+    public void notifyGroupUpdated() {
+        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
+            try {
+                ent.getValue().onUpdateGroup();
+            } catch (Exception e) {
+                log.addErrorToLog(e.toString());
+                clients.remove(ent.getKey());
+            }
+        }
+    }
+
+    public void notifyUserUpdated() {
+        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
+            try {
+                ent.getValue().onUpdateUser();
+            } catch (Exception e) {
+                log.addErrorToLog(e.toString());
+                clients.remove(ent.getKey());
+            }
+        }
+    }
 }
