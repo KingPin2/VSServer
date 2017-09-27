@@ -3,9 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/VS-Server.iml" filepath="$PROJECT_DIR$/VS-Server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VSServer.iml" filepath="$PROJECT_DIR$/.idea/modules/VSServer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VSServer_main.iml" filepath="$PROJECT_DIR$/.idea/modules/VSServer_main.iml" group="VSServer" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VSServer_test.iml" filepath="$PROJECT_DIR$/.idea/modules/VSServer_test.iml" group="VSServer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VS-Server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/VS-Server_main.iml" group="VS-Server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VS-Server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/VS-Server_test.iml" group="VS-Server" />
     </modules>
   </component>
 </project>
