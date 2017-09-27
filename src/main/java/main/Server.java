@@ -19,6 +19,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 public class Server extends UnicastRemoteObject implements Functions
@@ -321,13 +322,15 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that messages are updated
      */
     public void notifyMessageUpdated() {
-        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
-            try {
-                ent.getValue().onUpdateMessage();
-            } catch (Exception e) {
-                log.addErrorToLog(e.toString());
-                clients.remove(ent.getKey());
-            }
+        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.MESSAGE, ent, new NotifyCallback() {
+                @Override
+                public void notifyRemoved(String key) {
+                    clients.remove(key);
+                }
+            });
+            nt.run();
         }
     }
 
@@ -335,13 +338,15 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that groups are updated
      */
     public void notifyGroupUpdated() {
-        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
-            try {
-                ent.getValue().onUpdateGroup();
-            } catch (Exception e) {
-                log.addErrorToLog(e.toString());
-                clients.remove(ent.getKey());
-            }
+        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.GROUP, ent, new NotifyCallback() {
+                @Override
+                public void notifyRemoved(String key) {
+                    clients.remove(key);
+                }
+            });
+            nt.run();
         }
     }
 
@@ -349,13 +354,15 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that user are updated
      */
     public void notifyUserUpdated() {
-        for (Map.Entry<String,NotifyUpdate> ent : clients.entrySet()){
-            try {
-                ent.getValue().onUpdateUser();
-            } catch (Exception e) {
-                log.addErrorToLog(e.toString());
-                clients.remove(ent.getKey());
-            }
+        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.USER, ent, new NotifyCallback() {
+                @Override
+                public void notifyRemoved(String key) {
+                    clients.remove(key);
+                }
+            });
+            nt.run();
         }
     }
 }
