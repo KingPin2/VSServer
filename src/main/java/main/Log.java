@@ -24,7 +24,7 @@ public class Log {
                 directory.mkdir();
             }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
-            enabled = true;
+            //enabled = true;
             System.out.println("Log ok!");
         } catch (Exception e) {
             System.out.println("Could not open log!");
