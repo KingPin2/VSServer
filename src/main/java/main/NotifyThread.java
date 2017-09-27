@@ -1,6 +1,11 @@
 package main;
 
+import main.database.ObjectFactory;
+import main.objects.Group;
+import main.objects.Message;
+import main.objects.User;
 import main.rmiinterface.NotifyUpdate;
+import main.rmiinterface.UpdateType;
 
 import java.util.Map;
 
@@ -16,6 +21,8 @@ public class NotifyThread implements Runnable {
     NotifyType type;
     Map.Entry<String, NotifyUpdate> ent;
     NotifyCallback cb;
+    UpdateType uType;
+    Object obj;
 
 
     /**
@@ -23,10 +30,12 @@ public class NotifyThread implements Runnable {
      *
      * @param type
      */
-    public NotifyThread(NotifyType type, Map.Entry<String, NotifyUpdate> ent, NotifyCallback cb) {
+    public NotifyThread(NotifyType type, Map.Entry<String, NotifyUpdate> ent, NotifyCallback cb, UpdateType uType, Object obj) {
         this.type = type;
         this.ent = ent;
         this.cb = cb;
+        this.uType = uType;
+        this.obj = obj;
     }
 
     /**
@@ -36,11 +45,11 @@ public class NotifyThread implements Runnable {
     public void run() {
         try {
             if (type == NotifyType.MESSAGE) {
-                ent.getValue().onUpdateMessage();
+                ent.getValue().onUpdateMessage((Message) obj,uType);
             } else if (type == NotifyType.GROUP) {
-                ent.getValue().onUpdateGroup();
+                ent.getValue().onUpdateGroup((Group) obj,uType);
             } else if (type == NotifyType.USER) {
-                ent.getValue().onUpdateUser();
+                ent.getValue().onUpdateUser((User) obj,uType);
             }
         } catch (Exception e) {
             cb.notifyRemoved(ent.getKey());

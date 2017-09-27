@@ -6,6 +6,7 @@ import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
+import main.rmiinterface.UpdateType;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -269,9 +270,16 @@ public class Database {
         if (user != null) {
             try {
                 if (user.getID() == -1) {
-                    dbcon.execute("INSERT INTO 'User' (name, password, level) VALUES ('" + escapeSQLString(user.getName()) + "','" + escapeSQLString(user.getPassword()) + "','" + user.getLevel() + "');");
+                    ResultSet rs = dbcon.execute("INSERT INTO 'User' (name, password, level) VALUES ('" + escapeSQLString(user.getName()) + "','" + escapeSQLString(user.getPassword()) + "','" + user.getLevel() + "');");
+                    if (rs != null) {
+                        try {
+                            server.notifyUserUpdated(getUserById(rs.getInt(1)), UpdateType.SAVE);
+                        } catch (Exception e) {
+                        }
+                    }
                 } else {
                     dbcon.execute("UPDATE 'User' SET name = '" + escapeSQLString(user.getName()) + "', password = '" + escapeSQLString(user.getPassword()) + "', level = '" + user.getLevel() + "' WHERE id = '" + user.getID() + "';");
+                    server.notifyUserUpdated(user, UpdateType.UPDATE);
                 }
                 try {
                     Group broadcast = getGroupByName("Broadcast");
@@ -280,7 +288,6 @@ public class Database {
                 } catch (Exception e){
 
                 }
-                server.notifyUserUpdated();
             } catch (Exception e) {
                 server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
@@ -337,7 +344,7 @@ public class Database {
 
                     }
                     dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
-                    server.notifyUserUpdated();
+                    server.notifyUserUpdated(user, UpdateType.DELETE);
                 }
             } catch (Exception e) {
                 server.getLogger().addErrorToLog(e.toString());
@@ -730,6 +737,7 @@ public class Database {
                     if (rs != null) {
                         try {
                             groupId = rs.getInt(1);
+                            server.notifyGroupUpdated(getGroupById(groupId),UpdateType.SAVE);
                         } catch (Exception e) {
                             groupId = -1;
                         }
@@ -738,11 +746,11 @@ public class Database {
                     dbcon.execute("UPDATE 'Group' SET name = '" + escapeSQLString(group.getName()) + "', modId = '" + group.getModerator().getID() + "' WHERE id = '" + group.getID() + "';");
                     groupId = group.getID();
                     deleteGroupMembers(group.getID());
+                    server.notifyGroupUpdated(group,UpdateType.UPDATE);
                 }
                 if (groupId != -1) {
                     saveGroupMembers(groupId, group.getMembers());
                 }
-                server.notifyGroupUpdated();
             } catch (Exception e) {
                 e.printStackTrace();
                 server.getLogger().addErrorToLog(e.toString());
@@ -781,7 +789,7 @@ public class Database {
 
                     dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
-                    server.notifyGroupUpdated();
+                    server.notifyGroupUpdated(group, UpdateType.DELETE);
                 }
             } catch (Exception e) {
                 server.getLogger().addErrorToLog(e.toString());
@@ -1123,11 +1131,17 @@ public class Database {
                     gId = message.getGroup().getID();
                 }
                 if (message.getID() == -1) {
-                    dbcon.execute("INSERT INTO 'Message' (message, groupId, authorId, timestamp) VALUES ('" + escapeSQLString(message.getMessage()) + "','" + gId + "','" + aId + "','" + message.getTimestamp() + "');");
+                    ResultSet rs = dbcon.execute("INSERT INTO 'Message' (message, groupId, authorId, timestamp) VALUES ('" + escapeSQLString(message.getMessage()) + "','" + gId + "','" + aId + "','" + message.getTimestamp() + "');");
+                    if (rs != null) {
+                        try {
+                            server.notifyMessageUpdated(getMessageById(rs.getInt(1)), UpdateType.SAVE);
+                        } catch (Exception e) {
+                        }
+                    }
                 } else {
                     dbcon.execute("UPDATE 'Message' SET message = '" + escapeSQLString(message.getMessage()) + "', authorId = '" + aId + "', groupId = '" + gId + "', timestamp = '" + message.getTimestamp() + "' WHERE id = '" + message.getID() + "';");
+                    server.notifyMessageUpdated(message, UpdateType.UPDATE);
                 }
-                server.notifyMessageUpdated();
             } catch (Exception e) {
                 server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotSavedException();
@@ -1156,7 +1170,7 @@ public class Database {
                 } else {
                     dbcon.execute("DELETE FROM 'Message' WHERE id = '" + message.getID() + "';");
                 }
-                server.notifyMessageUpdated();
+                server.notifyMessageUpdated(message, UpdateType.DELETE);
             } catch (Exception e) {
                 server.getLogger().addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
