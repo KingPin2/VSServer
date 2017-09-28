@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class Database {
 
     DBConnection dbcon = null;
-    Server server = null;
+    Server server;
 
     /**
      * Connect to database
@@ -42,7 +42,7 @@ public class Database {
                 initDB();
             }
         } catch (DatabaseConnectionException e) {
-            server.log.addErrorToLog("openDB: " + e.toString());
+            Server.log.addErrorToLog("openDB: " + e.toString());
         }
     }
 
@@ -53,7 +53,7 @@ public class Database {
         try {
             dbcon.closeDB();
         } catch (DatabaseConnectionException e) {
-            server.log.addErrorToLog("closeDB: " + e.toString());
+            Server.log.addErrorToLog("closeDB: " + e.toString());
         }
     }
 
@@ -77,11 +77,10 @@ public class Database {
             rs.close();
             dbcon.free();
         } catch (Exception e) {
-            System.out.println("Database test FAILED.");
-            server.log.addWarningToLog("Database test failed.");
+            Server.log.addWarningToLog("Database test failed.");
             return false;
         }
-        System.out.println("Database test SUCCEEDED.");
+        Server.log.addToLog("Database test succeeded.");
         return true;
     }
 
@@ -91,8 +90,7 @@ public class Database {
     public synchronized void initDB() {
         try {
             if (!testDatabase()) {
-                System.out.println("Initialize database.");
-
+                Server.log.addToLog("Initialize database.");
                 try {
                     dbcon.execute("DROP TABLE `Group`;");
                 } catch (Exception e) {
@@ -109,7 +107,6 @@ public class Database {
                     dbcon.execute("DROP TABLE `User`;");
                 } catch (Exception e) {
                 }
-
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Group` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `modId` INTEGER NOT NULL );");
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Group_User` ( `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
@@ -117,14 +114,14 @@ public class Database {
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `User` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `password` TEXT NOT NULL, `level` INTEGER NOT NULL );");
                 saveUser(ObjectFactory.createUser("Admin", "admin", 2));
                 saveGroup(ObjectFactory.createEmptyGroup("Broadcast", getUserByName("Admin")));
-                System.out.println("-----------------");
-                System.out.println("Default User:");
-                System.out.println("Username: Admin");
-                System.out.println("Passwort: admin");
-                System.out.println("-----------------");
+                Server.log.addToLog("-----------------");
+                Server.log.addToLog("Default User:");
+                Server.log.addToLog("Username: Admin");
+                Server.log.addToLog("Passwort: admin");
+                Server.log.addToLog("-----------------");
             }
         } catch (Exception e) {
-            server.log.addErrorToLog("initDB: " + e.toString());
+            Server.log.addErrorToLog("initDB: " + e.toString());
         }
     }
 
@@ -153,7 +150,37 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getUserById: " + e.toString());
+            Server.log.addErrorToLog("getUserById: " + e.toString());
+            throw new DatabaseObjectNotFoundException();
+        }
+    }
+
+    /**
+     * Get a simple user from database by id
+     *
+     * @param id UserId
+     * @return User
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
+    public synchronized User getSimpleUserById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+        if (!dbcon.isOpen()) {
+            throw new DatabaseConnectionException("Not connected to database.");
+        }
+        try {
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE id = '" + id + "';");
+            if (rs.next()) {
+                User u = new User(rs.getInt("id"), rs.getString("name"), "NONE", 42);
+                rs.close();
+                dbcon.free();
+                return u;
+            } else {
+                rs.close();
+                throw new DatabaseObjectNotFoundException();
+            }
+        } catch (Exception e) {
+            dbcon.free();
+            Server.log.addErrorToLog("getSimpleUserById: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -183,7 +210,37 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getUserByName: " + e.toString());
+            Server.log.addErrorToLog("getUserByName: " + e.toString());
+            throw new DatabaseObjectNotFoundException();
+        }
+    }
+
+    /**
+     * Get a simple user from database by username
+     *
+     * @param username User Name
+     * @return User
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
+    public synchronized User getSimpleUserByName(String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+        if (!dbcon.isOpen()) {
+            throw new DatabaseConnectionException("Not connected to database.");
+        }
+        try {
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Name = '" + username + "' COLLATE NOCASE;");
+            if (rs.next()) {
+                User u = new User(rs.getInt("id"), rs.getString("name"), "NONE", 42);
+                rs.close();
+                dbcon.free();
+                return u;
+            } else {
+                rs.close();
+                throw new DatabaseObjectNotFoundException();
+            }
+        } catch (Exception e) {
+            dbcon.free();
+            Server.log.addErrorToLog("getSimpleUserByName: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -213,7 +270,37 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getUsers: " + e.toString());
+            Server.log.addErrorToLog("getUsers: " + e.toString());
+            throw new DatabaseObjectNotFoundException();
+        }
+    }
+
+    /**
+     * Get all simple users from database
+     *
+     * @return Userlist
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     */
+    public synchronized ArrayList<User> getSimpleUsers() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+        if (!dbcon.isOpen()) {
+            throw new DatabaseConnectionException("Not connected to database.");
+        }
+        try {
+            ArrayList<User> users = new ArrayList<User>();
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
+            while (rs.next()) {
+                users.add(new User(rs.getInt("id"), rs.getString("name"), "NONE", 42));
+            }
+            rs.close();
+            dbcon.free();
+            if (users.size() > 0) {
+                return users;
+            }
+            throw new DatabaseObjectNotFoundException();
+        } catch (Exception e) {
+            dbcon.free();
+            Server.log.addErrorToLog("getSimpleUsers: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -244,7 +331,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getUserByLevel: " + e.toString());
+            Server.log.addErrorToLog("getUserByLevel: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -262,6 +349,9 @@ public class Database {
             throw new DatabaseConnectionException("Not connected to database.");
         }
         if (user != null) {
+            if (user.getPassword() == "NONE" && user.getLevel() == 42) {
+                throw new IllegalArgumentException("Don't save simple user!");
+            }
             try {
                 UpdateType type = UpdateType.UNDEF;
                 if (user.getID() == -1) {
@@ -279,7 +369,7 @@ public class Database {
                 }
                 server.notifyUserUpdated(getUserByName(user.getName()), type);
             } catch (Exception e) {
-                server.log.addErrorToLog("saveUser: " + e.toString());
+                Server.log.addErrorToLog("saveUser: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -339,7 +429,7 @@ public class Database {
             } catch (DatabaseUserIsModException uim) {
                 throw uim;
             } catch (Exception e) {
-                server.log.addErrorToLog("deleteUser: " + e.toString());
+                Server.log.addErrorToLog("deleteUser: " + e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -368,7 +458,7 @@ public class Database {
                 dbcon.free();
                 if (mId != -1) {
                     try {
-                        g.setModerator(getUserById(mId));
+                        g.setModerator(getSimpleUserById(mId));
                     } catch (Exception e) {
                     }
                 }
@@ -380,7 +470,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroupById: " + e.toString());
+            Server.log.addErrorToLog("getGroupById: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -406,7 +496,7 @@ public class Database {
                 dbcon.free();
                 if (mId != -1) {
                     try {
-                        g.setModerator(getUserById(mId));
+                        g.setModerator(getSimpleUserById(mId));
                     } catch (Exception e) {
                     }
                 }
@@ -418,7 +508,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroupByName: " + e.toString());
+            Server.log.addErrorToLog("getGroupByName: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -462,7 +552,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroupsByUser: " + e.toString());
+            Server.log.addErrorToLog("getGroupsByUser: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -500,7 +590,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroupsByModerator: " + e.toString());
+            Server.log.addErrorToLog("getGroupsByModerator: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -530,7 +620,7 @@ public class Database {
                 for (int i = 0; i < groups.size(); i++) {
                     if (mIds.get(i) != -1) {
                         try {
-                            groups.get(i).setModerator(getUserById(mIds.get(i)));
+                            groups.get(i).setModerator(getSimpleUserById(mIds.get(i)));
                         } catch (Exception e) {
                         }
                     }
@@ -541,7 +631,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroups: " + e.toString());
+            Server.log.addErrorToLog("getGroups: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -585,8 +675,9 @@ public class Database {
                     saveGroupMembers(groupId, group.getMembers());
                 }
                 server.notifyGroupUpdated(getGroupByName(group.getName()), type);
+                saveUser(ObjectFactory.createUser(group.getName(),group.getName(),0));
             } catch (Exception e) {
-                server.log.addErrorToLog("saveGroup: " + e.toString());
+                Server.log.addErrorToLog("saveGroup: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -623,9 +714,10 @@ public class Database {
                     dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
                     server.notifyGroupUpdated(group, UpdateType.DELETE);
+                    deleteUser(key,getUserByName(group.getName()),rmi);
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog("deleteGroup: " + e.toString());
+                Server.log.addErrorToLog("deleteGroup: " + e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -658,7 +750,7 @@ public class Database {
 
                 for (int i : uIds) {
                     try {
-                        User u = getUserById(i);
+                        User u = getSimpleUserById(i);
                         if (members.contains(u)) {
                             members.remove(u);
                         }
@@ -673,7 +765,7 @@ public class Database {
             return null;
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getGroupMembers: " + e.toString());
+            Server.log.addErrorToLog("getGroupMembers: " + e.toString());
             return null;
         }
     }
@@ -700,7 +792,7 @@ public class Database {
     private synchronized ArrayList<User> getUsersNotInGroup(int groupId) {
         try {
             ArrayList<User> members = getGroupMembers(groupId);
-            ArrayList<User> users = getUsers();
+            ArrayList<User> users = getSimpleUsers();
             ArrayList<User> notInGroup = new ArrayList<User>();
             for (User u : users) {
                 boolean found = false;
@@ -720,7 +812,7 @@ public class Database {
             return null;
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getUsersNotInGroup: " + e.toString());
+            Server.log.addErrorToLog("getUsersNotInGroup: " + e.toString());
             return null;
         }
     }
@@ -738,7 +830,7 @@ public class Database {
         try {
             dbcon.execute("DELETE FROM 'Group_User' WHERE groupId = '" + groupId + "';");
         } catch (Exception e) {
-            server.log.addErrorToLog("deleteGroupMembers: " + e.toString());
+            Server.log.addErrorToLog("deleteGroupMembers: " + e.toString());
             dbcon.free();
         }
     }
@@ -761,7 +853,7 @@ public class Database {
                     dbcon.execute("INSERT INTO 'Group_User' (groupId, userId) VALUES ('" + groupId + "','" + gM.getID() + "');");
                 }
             } catch (Exception e) {
-                server.log.addErrorToLog("saveGroupMembers: " + e.toString());
+                Server.log.addErrorToLog("saveGroupMembers: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         }
@@ -808,7 +900,7 @@ public class Database {
             }
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getMessageById: " + e.toString());
+            Server.log.addErrorToLog("getMessageById: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -847,7 +939,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getMessagesByUser: " + e.toString());
+            Server.log.addErrorToLog("getMessagesByUser: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -886,7 +978,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getMessagesByGroup: " + e.toString());
+            Server.log.addErrorToLog("getMessagesByGroup: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -936,7 +1028,7 @@ public class Database {
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
-            server.log.addErrorToLog("getMessages: " + e.toString());
+            Server.log.addErrorToLog("getMessages: " + e.toString());
             throw new DatabaseObjectNotFoundException();
         }
     }
@@ -974,7 +1066,7 @@ public class Database {
                 m.setKey(key);
                 server.notifyMessageUpdated(m, type);
             } catch (Exception e) {
-                server.log.addErrorToLog("saveMessage: " + e.toString());
+                Server.log.addErrorToLog("saveMessage: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
         } else {
@@ -1004,7 +1096,7 @@ public class Database {
                 message.setKey(key);
                 server.notifyMessageUpdated(message, UpdateType.DELETE);
             } catch (Exception e) {
-                server.log.addErrorToLog("deleteMessage: " + e.toString());
+                Server.log.addErrorToLog("deleteMessage: " + e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
@@ -1037,7 +1129,7 @@ public class Database {
                 return u;
             }
         } catch (Exception e) {
-            server.log.addErrorToLog("loginUser: " + e.toString());
+            Server.log.addErrorToLog("loginUser: " + e.toString());
         }
         return null;
     }

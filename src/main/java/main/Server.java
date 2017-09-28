@@ -54,11 +54,26 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     @Override
     public User getUserById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get user by id: " + key + ";" + id);
         log.addToLog("Get user by id: " + key + ";" + id);
         User u = this.db.getUserById(id);
         checkAuthReadSingleUser(key, u);
         return u;
+    }
+
+    /**
+     * Get a simple user by id
+     * @param key Client key
+     * @param id userID
+     * @return User
+     * @throws RemoteException
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     * @throws UserAuthException
+     */
+    @Override
+    public User getSimpleUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+        log.addToLog("Get simple user by id: " + key + ";" + id);
+        return this.db.getSimpleUserById(id);
     }
 
     /**
@@ -71,11 +86,26 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     @Override
     public User getUserByName(String key, String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get user by name: " + key + ";" + username);
         log.addToLog("Get user by name: " + key + ";" + username);
         User u = this.db.getUserByName(username);
         checkAuthReadSingleUser(key, u);
         return u;
+    }
+
+    /**
+     * Get a simple user by name
+     * @param key Client key
+     * @param name username
+     * @return User
+     * @throws RemoteException
+     * @throws DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException
+     * @throws UserAuthException
+     */
+    @Override
+    public User getSimpleUserByName(String key, String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+        log.addToLog("Get simple user by id: " + key + ";" + name);
+        return this.db.getSimpleUserByName(name);
     }
 
     /**
@@ -87,7 +117,6 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     @Override
     public ArrayList<User> getUsers(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get all user: " + key);
         log.addToLog("Get all user: " + key);
         checkAuthReadMoreUser(key);
         return this.db.getUsers();
@@ -101,7 +130,6 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     @Override
     public String test(int testID) {
-        System.out.println("Test");
         log.addToLog("Test");
         return "Hallo Welt!";
     }
@@ -116,7 +144,6 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     @Override
     public ArrayList<User> getUsersByLevel(String key, int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get user by level: " + key + ";" + level);
         log.addToLog("Get user by level: " + key + ";" + level);
         checkAuthReadMoreUser(key);
         return this.db.getUsersByLevel(level);
@@ -124,7 +151,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void saveUser(String key, User u) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
-        System.out.println("Save user: " + key + ";" + u);
         log.addToLog("Save user: " + key + ";" + u);
         checkAuthEditUser(key,u);
         this.db.saveUser(u);
@@ -132,7 +158,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public Group getGroupById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get group by id: " + key + ";" + id);
         log.addToLog("Get group by id: " + key + ";" + id);
         checkAuth(key);
         return this.db.getGroupById(id);
@@ -140,7 +165,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Group> getGroups(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get all groups: " + key);
         log.addToLog("Get all groups: " + key);
         checkAuth(key);
         return this.db.getGroups();
@@ -148,7 +172,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Group> getGroupsByUser(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get groups by user: " + key + ";" + u);
         log.addToLog("Get groups by user: " + key + ";" + u);
         checkAuth(key);
         return this.db.getGroupsByUser(u);
@@ -156,7 +179,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Group> getGroupsByModerator(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get groups by moderator: " + key + ";" + u);
         log.addToLog("Get groups by moderator: " + key + ";" + u);
         checkAuth(key);
         return this.db.getGroupsByModerator(u);
@@ -164,7 +186,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void saveGroup(String key, Group g) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
-        System.out.println("Save group: " + key + ";" + g);
         log.addToLog("Save group: " + key + ";" + g);
         checkAuthEditGroup(key, g);
         this.db.saveGroup(g);
@@ -172,7 +193,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<User> getUsersNotInGroup(String key, Group group) throws UserAuthException {
-        System.out.println("Get user not in group: " + key + ";" + group);
         log.addToLog("Get user not in group: " + key + ";" + group);
         checkAuth(key);
         return this.db.getUsersNotInGroup(group);
@@ -180,7 +200,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public Message getMessageById(String key, int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get message by id: " + key + ";" + id);
         log.addToLog("Get message by id: " + key + ";" + id);
         checkAuth(key);
         Message m = this.db.getMessageById(id, rmi);
@@ -190,7 +209,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Message> getMessagesByUser(String key, User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get messages by user: " + key + ";" + u);
         log.addToLog("Get messages by user: " + key + ";" + u);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
@@ -203,7 +221,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Message> getMessages(String key, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get all messages: " + key);
         log.addToLog("Get all messages: " + key);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
@@ -216,7 +233,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public ArrayList<Message> getMessagesByGroup(String key, Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get messages by group: " + key + ";" + g);
         log.addToLog("Get messages by group: " + key + ";" + g);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
@@ -229,7 +245,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void saveMessage(String key, Message m, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
-        System.out.println("Save message: " + key + ";" + m);
         log.addToLog("Save message: " + key + ";" + m);
         checkAuthEditMessage(key,m);
         this.db.saveMessage(key, m, rmi);
@@ -237,7 +252,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public Group getGroupByName(String key, String name) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        System.out.println("Get group by name: " + key + ";" + name);
         log.addToLog("Get group by name: " + key + ";" + name);
         checkAuth(key);
         return this.db.getGroupByName(name);
@@ -245,7 +259,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void deleteMessage(String key, Message m) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
-        System.out.println("Delete message: " + key + ";" + m);
         log.addToLog("Delete message: " + key + ";" + m);
         checkAuthEditMessage(key,m);
         this.db.deleteMessage(key, m);
@@ -253,7 +266,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void deleteUser(String key, User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException, UserAuthException {
-        System.out.println("Delete user: " + key + ";" + u);
         log.addToLog("Delete user: " + key + ";" + u);
         checkAuthEditUser(key,u);
         this.db.deleteUser(key, u, rmi);
@@ -261,7 +273,6 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     @Override
     public void deleteGroup(String key, Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
-        System.out.println("Delete group: " + key + ";" + g);
         log.addToLog("Delete group: " + key + ";" + g);
         checkAuthEditGroup(key, g);
         this.db.deleteGroup(key, g, rmi);
@@ -275,7 +286,6 @@ public class Server extends UnicastRemoteObject implements Functions {
             random = rs.nextString();
         }
 
-        System.out.println("Connect: " + random);
         clients.put(random, upd);
         log.addToLog("Connect: " + random);
         return random;
@@ -284,7 +294,6 @@ public class Server extends UnicastRemoteObject implements Functions {
     @Override
     public void disconnect(String key) throws RemoteException {
         try {
-            System.out.println("Disconnect: " + key + ";" + key);
             clients.remove(key);
             logout(key);
             log.addToLog("Disconnect: " + key + ";" + key);
@@ -297,7 +306,6 @@ public class Server extends UnicastRemoteObject implements Functions {
     public User login(String key, String username, String password) {
         User erg = null;
         if (!user.containsKey(key)) {
-            System.out.println("Login user: " + key + ";" + username);
             log.addToLog("Login user: " + key + ";" + username);
             erg = this.db.loginUser(username, password);
             if (erg != null) {
@@ -310,7 +318,6 @@ public class Server extends UnicastRemoteObject implements Functions {
     @Override
     public void logout(String key) {
         if (user.containsKey(key)) {
-            System.out.println("Logout user: " + key + ";" + user.get(key));
             log.addToLog("Logout user: " + key + ";" + user.get(key));
             user.remove(key);
         }
@@ -365,11 +372,7 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     public static void main(String args[]) {
         try {
-            System.out.println("-------------------------------------------------");
-            System.out.println("");
             log = new Log();
-            System.out.println("");
-            System.out.println("Starting server...");
             log.addToLog("Starting server");
             server = new Server();
             Functions stub;
@@ -378,14 +381,9 @@ public class Server extends UnicastRemoteObject implements Functions {
             } catch (Exception e) {
                 stub = (Functions) UnicastRemoteObject.toStub(server);
             }
-
             Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             registry.rebind("Functions", stub);
-
-            System.out.println("");
-            System.out.println("-------------------------------------------------");
-            System.out.println("");
-            System.out.println("Server running...");
+            log.addToLog("Server running");
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             log.addErrorToLog("Main: " + e.toString());
@@ -397,6 +395,7 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyMessageUpdated(Message m, UpdateType type) {
         try {
+            log.addToLog("Notify message updated: " + type + "; " + m);
             Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
 
             while (iter.hasNext()) {
@@ -418,6 +417,7 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyGroupUpdated(Group g, UpdateType type) {
         try {
+            log.addToLog("Notify group updated: " + type + "; " + g);
             Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
 
             while (iter.hasNext()) {
@@ -439,6 +439,7 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyUserUpdated(User u, UpdateType type) {
         try {
+            log.addToLog("Notify user updated: " + type + "; " + u);
             Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
 
             while (iter.hasNext()) {

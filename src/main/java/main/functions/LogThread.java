@@ -52,15 +52,9 @@ public class LogThread implements Runnable {
                 //Get Response
                 InputStream is = connection.getInputStream();
                 BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\r');
-                }
                 rd.close();
-                System.out.println(response.toString());
             } catch (Exception e) {
+                System.err.println(e.toString());
             } finally {
                 if (connection != null) {
                     connection.disconnect();

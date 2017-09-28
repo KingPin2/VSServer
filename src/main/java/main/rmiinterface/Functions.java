@@ -13,7 +13,9 @@ public interface Functions extends Remote
 {
     String test(int testID) throws RemoteException;
     User getUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
+    User getSimpleUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
     User getUserByName(String key, String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
+    User getSimpleUserByName(String key, String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
     ArrayList<User> getUsers(String key) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
     ArrayList<User> getUsersByLevel(String key, int level) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException;
     ArrayList <User> getUsersNotInGroup(String key, Group group) throws RemoteException, UserAuthException;

@@ -1,5 +1,6 @@
 package main.database;
 
+import main.Server;
 import main.exceptions.DatabaseConnectionException;
 import main.exceptions.DatabaseException;
 
@@ -10,31 +11,32 @@ import java.sql.*;
  *
  * Manage main.main.database connection
  */
-public class DBConnection {
+class DBConnection {
 
-    Connection con;
-    Statement statement;
+    private Connection con;
+    private Statement statement;
 
     private boolean working;
 
     /**
      * Initialise connection objects
      */
-    protected DBConnection(){
+    DBConnection(){
         con = null;
         working = false;
     }
 
     /**
      * Connect to main.main.database
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
-    protected void openDB() throws DatabaseConnectionException {
+    void openDB() throws DatabaseConnectionException {
         try {
             while (working) {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e){
+                    Server.log.addErrorToLog("openDB: " + e.toString());
                 }
             }
             working = true;
@@ -50,21 +52,23 @@ public class DBConnection {
             working = false;
         } catch ( Exception e ) {
             working = false;
+            Server.log.addErrorToLog("openDB: " + e.toString());
             throw new DatabaseConnectionException("Could not open database.");
         }
-        System.out.println("Opened database successfully.");
+        Server.log.addToLog("Opened database successfully.");
     }
 
     /**
      * Close connection to main.main.database
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
-    protected void closeDB() throws DatabaseConnectionException {
+    void closeDB() throws DatabaseConnectionException {
         try {
             while (working) {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e){
+                    Server.log.addErrorToLog("closeDB: " + e.toString());
                 }
             }
             working = true;
@@ -76,46 +80,23 @@ public class DBConnection {
             working = false;
         } catch (Exception e) {
             working = false;
+            Server.log.addErrorToLog("closeDB: " + e.toString());
             throw new DatabaseConnectionException("Could not close database.");
         }
-        System.out.println("Closed database successfully.");
-    }
-
-    /**
-     * Renews the used statement
-     * @throws DatabaseException
-     */
-    protected void renewStatement() throws DatabaseException {
-        try {
-            if (isOpen()) {
-                while (working) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e){
-                    }
-                }
-                working = true;
-                statement.close();
-                statement = null;
-                statement = con.createStatement();
-                working = false;
-            }
-        } catch (Exception e) {
-            working = false;
-            throw new DatabaseException("Could not renew statement.");
-        }
+        Server.log.addToLog("Closed database successfully.");
     }
 
     /**
      * Check if connected to main.main.database
      * @return connected
      */
-    protected boolean isOpen() {
+    boolean isOpen() {
         try {
             if (con != null && !con.isClosed()){
                 return true;
             }
         } catch (SQLException e) {
+            Server.log.addErrorToLog("isOpen: " + e.toString());
         }
         return false;
     }
@@ -124,16 +105,18 @@ public class DBConnection {
      * Execute sql query
      * @param sql sql query
      * @return ResultSet
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
     private ResultSet executeQuery(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
             try {
                 return statement.executeQuery(sql);
             } catch (SQLException e) {
+                Server.log.addErrorToLog("executeQuery: " + e.toString());
                 throw new DatabaseException("Can't execute query.");
             }
         } else {
+            Server.log.addErrorToLog("executeQuery: Not connected to database.");
             throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
@@ -141,7 +124,7 @@ public class DBConnection {
     /**
      * Execute sql update
      * @param sql sql update
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
     private void executeUpdate(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
@@ -149,9 +132,11 @@ public class DBConnection {
                 statement.executeUpdate(sql);
                 con.commit();
             } catch (SQLException e) {
+                Server.log.addErrorToLog("executeUpdate: " + e.toString());
                 throw new DatabaseException("Can't execute update.");
             }
         } else {
+            Server.log.addErrorToLog("executeUpdate: Not connected to database.");
             throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
@@ -159,7 +144,7 @@ public class DBConnection {
     /**
      * Execute sql insert
      * @param sql sql insert
-     * @throws DatabaseConnectionException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
     private ResultSet executeInsert(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
@@ -167,6 +152,7 @@ public class DBConnection {
                 statement.executeUpdate(sql);
                 con.commit();
             } catch (SQLException e) {
+                Server.log.addErrorToLog("executeInsert: " + e.toString());
                 throw new DatabaseException("Can't execute insert.");
             }
             try {
@@ -175,6 +161,7 @@ public class DBConnection {
                 return null;
             }
         } else {
+            Server.log.addErrorToLog("executeInsert: Not connected to database.");
             throw  new DatabaseConnectionException("Not connected to database.");
         }
     }
@@ -184,15 +171,16 @@ public class DBConnection {
      * Call free() after execute SELECT and closing ResultSet
      * @param sql sql statement
      * @return ResultSet, if SELECT; null else
-     * @throws DatabaseException
-     * @throws DatabaseConnectionException
+     * @throws DatabaseException DatabaseException
+     * @throws DatabaseConnectionException DatabaseConnectionException
      */
-    protected ResultSet execute(String sql) throws DatabaseException, DatabaseConnectionException {
+    ResultSet execute(String sql) throws DatabaseException, DatabaseConnectionException {
         try {
             while (working) {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e){
+                    Server.log.addErrorToLog("execute: " + e.toString());
                 }
             }
             working = true;
@@ -217,6 +205,7 @@ public class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e){
+                        Server.log.addErrorToLog("execute: " + e.toString());
                         throw new DatabaseException("Error creating table");
                     }
                     working = false;
@@ -226,6 +215,7 @@ public class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e){
+                        Server.log.addErrorToLog("execute: " + e.toString());
                         throw new DatabaseException("Error dropping table");
                     }
                     working = false;
@@ -235,6 +225,7 @@ public class DBConnection {
                     throw new DatabaseException("Invalid query: " + pref);
             }
         } catch (Exception e){
+            Server.log.addErrorToLog("execute: " + e.toString());
             working = false;
             throw e;
         }
@@ -243,7 +234,7 @@ public class DBConnection {
     /**
      * Set the working flag to false
      */
-    protected void free(){
+    void free(){
         working = false;
     }
 }

@@ -1,5 +1,6 @@
 package main.objects;
 
+import main.exceptions.UserAuthException;
 import main.rmiinterface.Functions;
 
 import java.io.Serializable;
@@ -115,7 +116,7 @@ public class Message implements Serializable {
         try {
             if (this.authorId != -1) {
                 if (author == null) {
-                    this.author = rmi.getUserById(key, this.authorId);
+                    this.author = rmi.getSimpleUserById(key, this.authorId);
                 }
                 return this.author;
             } else {
