@@ -7,17 +7,21 @@ import java.io.Serializable;
 /**
  * Created by Dominik on 18.08.2017.
  */
-public class Message implements Serializable{
+public class Message implements Serializable {
 
     private int id;
     private String message;
     private int authorId;
     private int groupId;
+    private String key;
+    private Group group;
+    private User author;
     private long timestamp;
     private Functions rmi;
 
     /**
      * Create message (with given ID -> Update message in main.database)
+     *
      * @param id
      * @param message
      * @param group
@@ -30,43 +34,50 @@ public class Message implements Serializable{
         setMessage(message);
         this.timestamp = timestamp;
         this.rmi = rmi;
+        this.group = null;
+        this.author = null;
+        this.key = null;
     }
 
 
     /**
      * Create  message (with ID -1 -> Save as new message in main.database)
+     *
      * @param message
      * @param author
      */
-    public Message(String message, User author){
-        this(-1, message,null, author, System.currentTimeMillis(), null);
+    public Message(String message, User author) {
+        this(-1, message, null, author, System.currentTimeMillis(), null);
     }
 
     /**
      * Create  group message (with ID -1 -> Save as new message in main.database)
+     *
      * @param message
      * @param author
      * @param group
      */
-    public Message(String message, User author, Group group){
+    public Message(String message, User author, Group group) {
         this(-1, message, group, author, System.currentTimeMillis(), null);
     }
 
     /**
      * Get author id
+     *
      * @return id
      */
-    public int getID(){
+    public int getID() {
         return this.id;
     }
 
     /**
      * Set Message id
+     *
      * @param id Positive or -1
      * @throws IllegalArgumentException
      */
     private void setID(int id) throws IllegalArgumentException {
-        if (id < -1){
+        if (id < -1) {
             throw new IllegalArgumentException("ID negative.");
         }
         this.id = id;
@@ -74,19 +85,21 @@ public class Message implements Serializable{
 
     /**
      * Get Message message
+     *
      * @return name
      */
-    public String getMessage(){
+    public String getMessage() {
         return this.message;
     }
 
     /**
      * Set Message message
+     *
      * @param message Not null or empty
      * @throws IllegalArgumentException
      */
     public void setMessage(String message) throws IllegalArgumentException {
-        if (message == null || message.isEmpty()){
+        if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("Message null or empty.");
         }
         timestamp = System.currentTimeMillis();
@@ -95,11 +108,19 @@ public class Message implements Serializable{
 
     /**
      * Get Message author
+     *
      * @return author
      */
-    public User getAuthor(){
+    public User getAuthor() {
         try {
-            return rmi.getUserById(this.authorId);
+            if (this.authorId != -1) {
+                if (author == null) {
+                    this.author = rmi.getUserById(key, this.authorId);
+                }
+                return this.author;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -108,7 +129,7 @@ public class Message implements Serializable{
     /**
      * Set Message author
      */
-    public void setAuthor(User author){
+    public void setAuthor(User author) {
         if (author != null) {
             if (author.getID() != -1) {
                 timestamp = System.currentTimeMillis();
@@ -123,11 +144,19 @@ public class Message implements Serializable{
 
     /**
      * Get Message group
+     *
      * @return group
      */
-    public Group getGroup(){
+    public Group getGroup() {
         try {
-            return rmi.getGroupById(this.groupId);
+            if (this.groupId != -1) {
+                if (group == null) {
+                    this.group = rmi.getGroupById(key, this.groupId);
+                }
+                return this.group;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -151,6 +180,7 @@ public class Message implements Serializable{
 
     /**
      * Get Message timestamp
+     *
      * @return
      */
     public long getTimestamp() {
@@ -171,6 +201,15 @@ public class Message implements Serializable{
 
     public void setAuthorId(Integer authorId) {
         this.authorId = authorId;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void reset(){
+        this.author = null;
+        this.group = null;
     }
 
 

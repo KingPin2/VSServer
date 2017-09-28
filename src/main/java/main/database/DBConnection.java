@@ -1,7 +1,7 @@
 package main.database;
 
-import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseException;
+import main.exceptions.DatabaseConnectionException;
+import main.exceptions.DatabaseException;
 
 import java.sql.*;
 

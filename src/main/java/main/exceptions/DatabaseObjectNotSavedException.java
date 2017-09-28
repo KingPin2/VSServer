@@ -1,4 +1,4 @@
-package main.database.exceptions;
+package main.exceptions;
 
 import java.io.Serializable;
 

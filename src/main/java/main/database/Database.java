@@ -1,7 +1,7 @@
 package main.database;
 
 import main.Server;
-import main.database.exceptions.*;
+import main.exceptions.*;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
