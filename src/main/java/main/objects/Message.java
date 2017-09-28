@@ -101,11 +101,15 @@ public class Message implements Serializable{
      * Set Message author
      */
     public void setAuthor(User author){
-        if (author.getID() != -1) {
-            timestamp = System.currentTimeMillis();
-            this.author = author;
+        if (author != null) {
+            if (author.getID() != -1) {
+                timestamp = System.currentTimeMillis();
+                this.author = author;
+            } else {
+                throw new IllegalArgumentException("Save user first in database!");
+            }
         } else {
-            throw new IllegalArgumentException("Save user first in database!");
+            this.author = null;
         }
     }
 
@@ -121,11 +125,15 @@ public class Message implements Serializable{
      * Set Message group
      */
     public void setGroup(Group group) {
-        if (group.getID() != -1) {
-        timestamp = System.currentTimeMillis();
-        this.group = group;
+        if (group != null) {
+            if (group.getID() != -1) {
+                timestamp = System.currentTimeMillis();
+                this.group = group;
+            } else {
+                throw new IllegalArgumentException("Save group first in database!");
+            }
         } else {
-            throw new IllegalArgumentException("Save group first in database!");
+            this.group = null;
         }
     }
 

@@ -91,7 +91,15 @@ public class Group implements Serializable{
      * @param moderator
      */
     public void setModerator(User moderator) {
-        this.moderator = moderator;
+        if (moderator != null) {
+            if (moderator.getID() != -1) {
+                this.moderator = moderator;
+            } else {
+                throw new IllegalArgumentException("Save user first in database!");
+            }
+        } else {
+            this.moderator = null;
+        }
     }
 
     /**
