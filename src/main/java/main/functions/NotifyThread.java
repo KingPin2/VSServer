@@ -53,7 +53,7 @@ public class NotifyThread implements Runnable {
                 ent.getValue().onUpdateUser((User) obj,uType);
             }
         } catch (Exception e) {
-            log.addErrorToLog("notifyThread: " + type.toString() + "; "+ e.toString());
+            log.addErrorToLog("notifyThread: " + ent.getKey() + "; " + type.toString() + "; "+ e.toString());
             cb.notifyRemoved(ent.getKey());
         }
     }

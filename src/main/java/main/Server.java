@@ -163,38 +163,38 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public Message getMessageById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public Message getMessageById(int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get message by id: " + id);
         log.addToLog("Get message by id: " + id);
-        return this.db.getMessageById(id);
+        return this.db.getMessageById(id, rmi);
     }
 
     @Override
-    public ArrayList<Message> getMessagesByUser(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessagesByUser(User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get messages by user: " + u);
         log.addToLog("Get messages by user: " + u);
-        return this.db.getMessagesByUser(u);
+        return this.db.getMessagesByUser(u, rmi);
     }
 
     @Override
-    public ArrayList<Message> getMessages() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessages(Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get all messages");
         log.addToLog("Get all messages");
-        return this.db.getMessages();
+        return this.db.getMessages(rmi);
     }
 
     @Override
-    public ArrayList<Message> getMessagesByGroup(Group g) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessagesByGroup(Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get messages by group: " + g);
         log.addToLog("Get messages by group: " + g);
-        return this.db.getMessagesByGroup(g);
+        return this.db.getMessagesByGroup(g, rmi);
     }
 
     @Override
-    public void saveMessage(Message message) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
+    public void saveMessage(Message message, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         System.out.println("Save message: " + message);
         log.addToLog("Save message: " + message);
-        this.db.saveMessage(message);
+        this.db.saveMessage(message, rmi);
     }
 
     @Override
@@ -219,21 +219,21 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public void deleteUser(User u) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
+    public void deleteUser(User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
         System.out.println("Delete user: " + u);
         log.addToLog("Delete user: " + u);
-        this.db.deleteUser(u);
+        this.db.deleteUser(u, rmi);
     }
 
     @Override
-    public void deleteGroup(Group g) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public void deleteGroup(Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
         System.out.println("Delete group: " + g);
         log.addToLog("Delete group: " + g);
-        this.db.deleteGroup(g);
+        this.db.deleteGroup(g, rmi);
     }
 
     @Override
-    public String connect(NotifyUpdate upd) throws RemoteException {
+    public String connect(NotifyUpdate upd, Functions rmi) throws RemoteException {
         String random = rs.nextString();
 
         while (clients.containsKey(random)) {
@@ -305,7 +305,6 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.addErrorToLog("notifyMessageUpdated: " + e.toString());
         }
     }
@@ -327,7 +326,6 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.addErrorToLog("notifyGroupUpdated: " + e.toString());
         }
     }
@@ -349,7 +347,6 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.addErrorToLog("notifyUserUpdated: " + e.toString());
         }
     }
