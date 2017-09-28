@@ -38,7 +38,6 @@ public class Database {
             if (!dbcon.isOpen()) {
                 dbcon.openDB();
                 initDB();
-                patchDB();
             }
         } catch (DatabaseConnectionException e) {
             server.log.addErrorToLog(e.toString());
@@ -125,16 +124,6 @@ public class Database {
             }
         } catch (Exception e) {
             server.log.addErrorToLog(e.toString());
-        }
-    }
-
-    public synchronized void patchDB(){
-        try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'Board';");
-            rs.close();
-            dbcon.free();
-            dbcon.execute("DROP TABLE `Board`;");
-        } catch (Exception e) {
         }
     }
 

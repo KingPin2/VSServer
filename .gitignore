@@ -69,3 +69,4 @@ build/
 log/
 
 .gradle/
+/database.db
