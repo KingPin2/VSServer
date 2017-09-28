@@ -9,6 +9,7 @@ import main.functions.RandomString;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
+import main.rmiinterface.CachedFunctions;
 import main.rmiinterface.Functions;
 import main.rmiinterface.NotifyUpdate;
 import main.rmiinterface.UpdateType;
@@ -137,6 +138,7 @@ public class Server extends UnicastRemoteObject implements Functions {
     /**
      * Get all user with specified level
      *
+     * @param key
      * @param level
      * @return Userlist
      * @throws DatabaseObjectNotFoundException
@@ -149,6 +151,14 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getUsersByLevel(level);
     }
 
+    /**
+     * Save a user
+     * @param key
+     * @param u
+     * @throws DatabaseConnectionException
+     * @throws DatabaseObjectNotSavedException
+     * @throws UserAuthException
+     */
     @Override
     public void saveUser(String key, User u) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
         log.addToLog("Save user: " + key + ";" + u);
@@ -199,20 +209,20 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public Message getMessageById(String key, int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+    public Message getMessageById(String key, int id, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get message by id: " + key + ";" + id);
         checkAuth(key);
-        Message m = this.db.getMessageById(id, rmi);
+        Message m = this.db.getMessageById(id, cRMI);
         m.setKey(key);
         return m;
     }
 
     @Override
-    public ArrayList<Message> getMessagesByUser(String key, User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+    public ArrayList<Message> getMessagesByUser(String key, User u, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get messages by user: " + key + ";" + u);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessagesByUser(u,rmi)){
+        for (Message m : this.db.getMessagesByUser(u,cRMI)){
             m.setKey(key);
             messages.add(m);
         }
@@ -220,11 +230,11 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public ArrayList<Message> getMessages(String key, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+    public ArrayList<Message> getMessages(String key, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get all messages: " + key);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessages(rmi)){
+        for (Message m : this.db.getMessages(cRMI)){
             m.setKey(key);
             messages.add(m);
         }
@@ -232,11 +242,11 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public ArrayList<Message> getMessagesByGroup(String key, Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
+    public ArrayList<Message> getMessagesByGroup(String key, Group g, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get messages by group: " + key + ";" + g);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessagesByGroup(g, rmi)){
+        for (Message m : this.db.getMessagesByGroup(g, cRMI)){
             m.setKey(key);
             messages.add(m);
         }
@@ -244,10 +254,10 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public void saveMessage(String key, Message m, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
+    public void saveMessage(String key, Message m, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
         log.addToLog("Save message: " + key + ";" + m);
         checkAuthEditMessage(key,m);
-        this.db.saveMessage(key, m, rmi);
+        this.db.saveMessage(key, m, cRMI);
     }
 
     @Override
@@ -265,17 +275,17 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public void deleteUser(String key, User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException, UserAuthException {
+    public void deleteUser(String key, User u, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException, UserAuthException {
         log.addToLog("Delete user: " + key + ";" + u);
         checkAuthEditUser(key,u);
-        this.db.deleteUser(key, u, rmi);
+        this.db.deleteUser(key, u, cRMI);
     }
 
     @Override
-    public void deleteGroup(String key, Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
+    public void deleteGroup(String key, Group g, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
         log.addToLog("Delete group: " + key + ";" + g);
         checkAuthEditGroup(key, g);
-        this.db.deleteGroup(key, g, rmi);
+        this.db.deleteGroup(key, g, cRMI);
     }
 
     @Override

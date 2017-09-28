@@ -117,7 +117,7 @@ public class Log {
         }
 
         mes = mes + "\n";
-        
+
         if (remoteEnabled) {
             executePost(mes);
         }

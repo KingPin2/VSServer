@@ -1,6 +1,7 @@
 package main.objects;
 
 import main.exceptions.UserAuthException;
+import main.rmiinterface.CachedFunctions;
 import main.rmiinterface.Functions;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.io.Serializable;
 /**
  * Created by Dominik on 18.08.2017.
  */
-public class Message implements Serializable {
+public class Message implements Serializable, Comparable<Message> {
 
     private int id;
     private String message;
@@ -18,7 +19,7 @@ public class Message implements Serializable {
     private Group group;
     private User author;
     private long timestamp;
-    private Functions rmi;
+    private CachedFunctions rmi;
 
     /**
      * Create message (with given ID -> Update message in main.database)
@@ -28,7 +29,7 @@ public class Message implements Serializable {
      * @param group
      * @param author
      */
-    public Message(int id, String message, Group group, User author, Long timestamp, Functions rmi) {
+    public Message(int id, String message, Group group, User author, Long timestamp, CachedFunctions rmi) {
         setID(id);
         setAuthor(author);
         setGroup(group);
@@ -208,7 +209,7 @@ public class Message implements Serializable {
         this.key = key;
     }
 
-    public void reset(){
+    public void reset() {
         this.author = null;
         this.group = null;
     }
@@ -238,5 +239,17 @@ public class Message implements Serializable {
     @Override
     public int hashCode() {
         return id;
+    }
+
+
+    @Override
+    public int compareTo(Message o) {
+        if (this.timestamp < o.timestamp) {
+            return 1;
+        } else if (this.timestamp > o.timestamp) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }
