@@ -23,18 +23,17 @@ public interface Functions extends Remote
     ArrayList <Group> getGroupsByModerator(User u) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     void saveGroup(Group group) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotSavedException;
     ArrayList <User> getUsersNotInGroup(Group group) throws RemoteException;
-    Message getMessageById(int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException;
-    ArrayList<Message> getMessagesByUser(User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException;
-    ArrayList<Message> getMessages(Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException;
-    ArrayList<Message> getMessagesByGroup(Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException;
-    void saveMessage(Message message, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException;
+    Message getMessageById(int id, Functions rmi) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
+    ArrayList<Message> getMessagesByUser(User u, Functions rmi) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
+    ArrayList<Message> getMessages(Functions rmi) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
+    ArrayList<Message> getMessagesByGroup(Group g, Functions rmi) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
+    void saveMessage(Message message, Functions rmi) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotSavedException;
     User loginUser(String username, String password) throws RemoteException;
     Group getGroupByName(String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     void deleteMessage(Message m) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
-    void deleteUser(User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException;
-    void deleteGroup(Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException;
-
-    String connect(NotifyUpdate upd, Functions rmi) throws RemoteException;
+    void deleteUser(User u, Functions rmi) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException;
+    void deleteGroup(Group g, Functions rmi) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
+    String connect(NotifyUpdate upd) throws RemoteException;
     void disconnect(String id) throws RemoteException;
 
 }

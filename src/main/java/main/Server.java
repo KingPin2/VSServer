@@ -233,7 +233,7 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public String connect(NotifyUpdate upd, Functions rmi) throws RemoteException {
+    public String connect(NotifyUpdate upd) throws RemoteException {
         String random = rs.nextString();
 
         while (clients.containsKey(random)) {
