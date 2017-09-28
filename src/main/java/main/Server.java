@@ -25,6 +25,8 @@ public class Server extends UnicastRemoteObject implements Functions {
     public static Server server;
     public static Log log;
 
+    public static final int ADMIN = 2;
+
     private Database db;
 
     private RandomString rs = new RandomString(10);
@@ -51,10 +53,12 @@ public class Server extends UnicastRemoteObject implements Functions {
      * @throws DatabaseConnectionException
      */
     @Override
-    public User getUserById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public User getUserById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get user by id: " + key + ";" + id);
         log.addToLog("Get user by id: " + key + ";" + id);
-        return this.db.getUserById(id);
+        User u = this.db.getUserById(id);
+        checkAuthReadSingleUser(key, u);
+        return u;
     }
 
     /**
@@ -66,10 +70,12 @@ public class Server extends UnicastRemoteObject implements Functions {
      * @throws DatabaseConnectionException
      */
     @Override
-    public User getUserByName(String key, String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public User getUserByName(String key, String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get user by name: " + key + ";" + username);
         log.addToLog("Get user by name: " + key + ";" + username);
-        return this.db.getUserByName(username);
+        User u = this.db.getUserByName(username);
+        checkAuthReadSingleUser(key, u);
+        return u;
     }
 
     /**
@@ -80,9 +86,10 @@ public class Server extends UnicastRemoteObject implements Functions {
      * @throws DatabaseConnectionException
      */
     @Override
-    public ArrayList<User> getUsers(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<User> getUsers(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get all user: " + key);
         log.addToLog("Get all user: " + key);
+        checkAuthReadMoreUser(key);
         return this.db.getUsers();
     }
 
@@ -108,74 +115,84 @@ public class Server extends UnicastRemoteObject implements Functions {
      * @throws DatabaseConnectionException
      */
     @Override
-    public ArrayList<User> getUsersByLevel(String key, int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<User> getUsersByLevel(String key, int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get user by level: " + key + ";" + level);
         log.addToLog("Get user by level: " + key + ";" + level);
+        checkAuthReadMoreUser(key);
         return this.db.getUsersByLevel(level);
     }
 
     @Override
-    public void saveUser(String key, User user) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
-        System.out.println("Save user: " + key + ";" + user);
-        log.addToLog("Save user: " + key + ";" + user);
-        this.db.saveUser(user);
+    public void saveUser(String key, User u) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
+        System.out.println("Save user: " + key + ";" + u);
+        log.addToLog("Save user: " + key + ";" + u);
+        checkAuthEditUser(key,u);
+        this.db.saveUser(u);
     }
 
     @Override
-    public Group getGroupById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public Group getGroupById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get group by id: " + key + ";" + id);
         log.addToLog("Get group by id: " + key + ";" + id);
+        checkAuth(key);
         return this.db.getGroupById(id);
     }
 
     @Override
-    public ArrayList<Group> getGroups(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Group> getGroups(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get all groups: " + key);
         log.addToLog("Get all groups: " + key);
+        checkAuth(key);
         return this.db.getGroups();
     }
 
     @Override
-    public ArrayList<Group> getGroupsByUser(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Group> getGroupsByUser(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get groups by user: " + key + ";" + u);
         log.addToLog("Get groups by user: " + key + ";" + u);
+        checkAuth(key);
         return this.db.getGroupsByUser(u);
     }
 
     @Override
-    public ArrayList<Group> getGroupsByModerator(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Group> getGroupsByModerator(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get groups by moderator: " + key + ";" + u);
         log.addToLog("Get groups by moderator: " + key + ";" + u);
+        checkAuth(key);
         return this.db.getGroupsByModerator(u);
     }
 
     @Override
-    public void saveGroup(String key, Group group) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
-        System.out.println("Save group: " + key + ";" + group);
-        log.addToLog("Save group: " + key + ";" + group);
-        this.db.saveGroup(group);
+    public void saveGroup(String key, Group g) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
+        System.out.println("Save group: " + key + ";" + g);
+        log.addToLog("Save group: " + key + ";" + g);
+        checkAuthEditGroup(key, g);
+        this.db.saveGroup(g);
     }
 
     @Override
-    public ArrayList<User> getUsersNotInGroup(String key, Group group) {
+    public ArrayList<User> getUsersNotInGroup(String key, Group group) throws UserAuthException {
         System.out.println("Get user not in group: " + key + ";" + group);
         log.addToLog("Get user not in group: " + key + ";" + group);
+        checkAuth(key);
         return this.db.getUsersNotInGroup(group);
     }
 
     @Override
-    public Message getMessageById(String key, int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public Message getMessageById(String key, int id, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get message by id: " + key + ";" + id);
         log.addToLog("Get message by id: " + key + ";" + id);
+        checkAuth(key);
         Message m = this.db.getMessageById(id, rmi);
         m.setKey(key);
         return m;
     }
 
     @Override
-    public ArrayList<Message> getMessagesByUser(String key, User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessagesByUser(String key, User u, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get messages by user: " + key + ";" + u);
         log.addToLog("Get messages by user: " + key + ";" + u);
+        checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
         for (Message m : this.db.getMessagesByUser(u,rmi)){
             m.setKey(key);
@@ -185,9 +202,10 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public ArrayList<Message> getMessages(String key, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessages(String key, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get all messages: " + key);
         log.addToLog("Get all messages: " + key);
+        checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
         for (Message m : this.db.getMessages(rmi)){
             m.setKey(key);
@@ -197,9 +215,10 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public ArrayList<Message> getMessagesByGroup(String key, Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public ArrayList<Message> getMessagesByGroup(String key, Group g, Functions rmi) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get messages by group: " + key + ";" + g);
         log.addToLog("Get messages by group: " + key + ";" + g);
+        checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
         for (Message m : this.db.getMessagesByGroup(g, rmi)){
             m.setKey(key);
@@ -209,37 +228,42 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public void saveMessage(String key, Message message, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
-        System.out.println("Save message: " + key + ";" + message);
-        log.addToLog("Save message: " + key + ";" + message);
-        this.db.saveMessage(message, rmi);
+    public void saveMessage(String key, Message m, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
+        System.out.println("Save message: " + key + ";" + m);
+        log.addToLog("Save message: " + key + ";" + m);
+        checkAuthEditMessage(key,m);
+        this.db.saveMessage(m, rmi);
     }
 
     @Override
-    public Group getGroupByName(String key, String name) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
+    public Group getGroupByName(String key, String name) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         System.out.println("Get group by name: " + key + ";" + name);
         log.addToLog("Get group by name: " + key + ";" + name);
+        checkAuth(key);
         return this.db.getGroupByName(name);
     }
 
     @Override
-    public void deleteMessage(String key, Message m) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public void deleteMessage(String key, Message m) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
         System.out.println("Delete message: " + key + ";" + m);
         log.addToLog("Delete message: " + key + ";" + m);
+        checkAuthEditMessage(key,m);
         this.db.deleteMessage(m);
     }
 
     @Override
-    public void deleteUser(String key, User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
+    public void deleteUser(String key, User u, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException, UserAuthException {
         System.out.println("Delete user: " + key + ";" + u);
         log.addToLog("Delete user: " + key + ";" + u);
+        checkAuthEditUser(key,u);
         this.db.deleteUser(u, rmi);
     }
 
     @Override
-    public void deleteGroup(String key, Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public void deleteGroup(String key, Group g, Functions rmi) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
         System.out.println("Delete group: " + key + ";" + g);
         log.addToLog("Delete group: " + key + ";" + g);
+        checkAuthEditGroup(key, g);
         this.db.deleteGroup(g, rmi);
     }
 
@@ -289,6 +313,52 @@ public class Server extends UnicastRemoteObject implements Functions {
             System.out.println("Logout user: " + key + ";" + user.get(key));
             log.addToLog("Logout user: " + key + ";" + user.get(key));
             user.remove(key);
+        }
+    }
+
+    private void checkAuthReadMoreUser(String key) throws UserAuthException {
+        checkAuth(key);
+        User auth = user.get(key);
+        if (auth.getLevel() != ADMIN){
+            throw new UserAuthException();
+        }
+    }
+
+    private void checkAuthReadSingleUser(String key, User u) throws UserAuthException {
+        checkAuth(key);
+        User auth = user.get(key);
+        if (!auth.equals(u) && auth.getLevel() != ADMIN){
+            throw new UserAuthException();
+        }
+    }
+
+    private void checkAuthEditUser(String key, User u) throws UserAuthException {
+        checkAuth(key);
+        User auth = user.get(key);
+        if (auth.getLevel() != ADMIN){
+            throw new UserAuthException();
+        }
+    }
+
+    private void checkAuthEditGroup(String key, Group g) throws UserAuthException {
+        checkAuth(key);
+        User auth = user.get(key);
+        if (auth.getLevel() != ADMIN){
+            throw new UserAuthException();
+        }
+    }
+
+    private void checkAuthEditMessage(String key, Message m) throws UserAuthException {
+        checkAuth(key);
+        User auth = user.get(key);
+        if (auth.getLevel() != ADMIN && m.getAuthorId() != auth.getID()){
+            throw new UserAuthException();
+        }
+    }
+
+    private void checkAuth(String key) throws UserAuthException {
+        if (!user.containsKey(key)) {
+            throw new UserAuthException();
         }
     }
 
