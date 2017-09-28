@@ -36,6 +36,7 @@ public class NotifyThread implements Runnable {
         this.cb = cb;
         this.uType = uType;
         this.obj = obj;
+        this.log = log;
     }
 
     /**
