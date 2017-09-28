@@ -1,6 +1,5 @@
-package main;
+package main.functions;
 
-import main.database.ObjectFactory;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -14,10 +13,11 @@ import java.util.Map;
  */
 public class NotifyThread implements Runnable {
 
-    enum NotifyType {
+    public enum NotifyType {
         USER, GROUP, MESSAGE
     }
 
+    Log log;
     NotifyType type;
     Map.Entry<String, NotifyUpdate> ent;
     NotifyCallback cb;
@@ -30,7 +30,7 @@ public class NotifyThread implements Runnable {
      *
      * @param type
      */
-    public NotifyThread(NotifyType type, Map.Entry<String, NotifyUpdate> ent, NotifyCallback cb, UpdateType uType, Object obj) {
+    public NotifyThread(Log log, NotifyType type, Map.Entry<String, NotifyUpdate> ent, NotifyCallback cb, UpdateType uType, Object obj) {
         this.type = type;
         this.ent = ent;
         this.cb = cb;
@@ -52,6 +52,7 @@ public class NotifyThread implements Runnable {
                 ent.getValue().onUpdateUser((User) obj,uType);
             }
         } catch (Exception e) {
+            log.addErrorToLog(e.toString());
             cb.notifyRemoved(ent.getKey());
         }
     }

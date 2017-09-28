@@ -5,6 +5,10 @@ import main.database.exceptions.DatabaseConnectionException;
 import main.database.exceptions.DatabaseObjectNotDeletedException;
 import main.database.exceptions.DatabaseObjectNotFoundException;
 import main.database.exceptions.DatabaseObjectNotSavedException;
+import main.functions.Log;
+import main.functions.NotifyCallback;
+import main.functions.NotifyThread;
+import main.functions.RandomString;
 import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
@@ -23,39 +27,30 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class Server extends UnicastRemoteObject implements Functions
-{
+public class Server extends UnicastRemoteObject implements Functions {
 
     public static Server server;
+    public static Log log;
 
     private Database db;
-    private Log log;
 
     private RandomString rs = new RandomString(15);
     private HashMap<String, NotifyUpdate> clients = new HashMap<String, NotifyUpdate>();
 
     /**
      * Server instance
-     * @param log Logging object
+     *
      * @throws DatabaseConnectionException
      * @throws RemoteException
      */
-    public Server(Log log) throws DatabaseConnectionException, RemoteException {
+    public Server() throws DatabaseConnectionException, RemoteException {
         super();
-        this.log = log;
         db = new Database(this);
     }
 
     /**
-     * Returns the logging object
-     * @return Log
-     */
-    public Log getLogger(){
-        return this.log;
-    }
-
-    /**
      * Get a user by id
+     *
      * @param id userId
      * @return User
      * @throws DatabaseObjectNotFoundException
@@ -70,6 +65,7 @@ public class Server extends UnicastRemoteObject implements Functions
 
     /**
      * Get a user by name
+     *
      * @param username
      * @return User
      * @throws DatabaseObjectNotFoundException
@@ -84,6 +80,7 @@ public class Server extends UnicastRemoteObject implements Functions
 
     /**
      * Get all user
+     *
      * @return Userlist
      * @throws DatabaseObjectNotFoundException
      * @throws DatabaseConnectionException
@@ -97,12 +94,12 @@ public class Server extends UnicastRemoteObject implements Functions
 
     /**
      * Test
+     *
      * @param testID
      * @return Hallo Welt
      */
     @Override
-    public String test(int testID) 
-    {
+    public String test(int testID) {
         System.out.println("Test");
         log.addToLog("Test");
         return "Hallo Welt!";
@@ -110,6 +107,7 @@ public class Server extends UnicastRemoteObject implements Functions
 
     /**
      * Get all user with specified level
+     *
      * @param level
      * @return Userlist
      * @throws DatabaseObjectNotFoundException
@@ -121,42 +119,49 @@ public class Server extends UnicastRemoteObject implements Functions
         log.addToLog("Get user by level: " + level);
         return this.db.getUsersByLevel(level);
     }
+
     @Override
     public void saveUser(User user) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         System.out.println("Save user: " + user);
         log.addToLog("Save user: " + user);
         this.db.saveUser(user);
     }
+
     @Override
     public Board getBoardById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get board by id: " + id);
         log.addToLog("Get board by id: " + id);
         return this.db.getBoardById(id);
     }
+
     @Override
     public ArrayList<Board> getBoards() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get all boards");
         log.addToLog("Get all boards");
         return this.db.getBoards();
     }
+
     @Override
     public void saveBoard(Board board) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         System.out.println("Save board: " + board);
         log.addToLog("Save board: " + board);
         this.db.saveBoard(board);
     }
+
     @Override
     public Group getGroupById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get group by id: " + id);
         log.addToLog("Get group by id: " + id);
         return this.db.getGroupById(id);
     }
+
     @Override
     public ArrayList<Group> getGroups() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get all groups");
         log.addToLog("Get all groups");
         return this.db.getGroups();
     }
+
     @Override
     public ArrayList<Group> getGroupsByUser(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get groups by user: " + u);
@@ -177,44 +182,51 @@ public class Server extends UnicastRemoteObject implements Functions
         log.addToLog("Save group: " + group);
         this.db.saveGroup(group);
     }
+
     @Override
-    public ArrayList<User> getUsersNotInGroup(Group group)  {
+    public ArrayList<User> getUsersNotInGroup(Group group) {
         System.out.println("Get user not in group: " + group);
         log.addToLog("Get user not in group: " + group);
         return this.db.getUsersNotInGroup(group);
     }
+
     @Override
     public Message getMessageById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get message by id: " + id);
         log.addToLog("Get message by id: " + id);
         return this.db.getMessageById(id);
     }
+
     @Override
     public ArrayList<Message> getMessagesByUser(User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get messages by user: " + u);
         log.addToLog("Get messages by user: " + u);
         return this.db.getMessagesByUser(u);
     }
+
     @Override
     public ArrayList<Message> getMessages() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get all messages");
         log.addToLog("Get all messages");
         return this.db.getMessages();
     }
+
     @Override
     public ArrayList<Message> getMessagesByGroup(Group g) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get messages by group: " + g);
         log.addToLog("Get messages by group: " + g);
         return this.db.getMessagesByGroup(g);
     }
+
     @Override
     public void saveMessage(Message message) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
         System.out.println("Save message: " + message);
         log.addToLog("Save message: " + message);
         this.db.saveMessage(message);
     }
+
     @Override
-    public User loginUser(String username, String password)  {
+    public User loginUser(String username, String password) {
         System.out.println("Login user: " + username);
         log.addToLog("Login user: " + username);
         return this.db.loginUser(username, password);
@@ -259,12 +271,12 @@ public class Server extends UnicastRemoteObject implements Functions
     public String connect(NotifyUpdate upd) throws RemoteException {
         String random = rs.nextString();
 
-        while (clients.containsKey(random)){
+        while (clients.containsKey(random)) {
             random = rs.nextString();
         }
 
         System.out.println("Connect: " + random);
-        clients.put(random,upd);
+        clients.put(random, upd);
         log.addToLog("Connect: " + random);
         return random;
     }
@@ -275,24 +287,21 @@ public class Server extends UnicastRemoteObject implements Functions
             System.out.println("Disconnect: " + id);
             clients.remove(id);
             log.addToLog("Disconnect: " + id);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.addErrorToLog(e.toString());
         }
     }
 
 
-    public static void main(String args[])
-    {
-        Log log = null;
-        try
-        {
+    public static void main(String args[]) {
+        try {
             System.out.println("-------------------------------------------------");
             System.out.println("");
             log = new Log();
             System.out.println("");
             System.out.println("Starting server...");
             log.addToLog("Starting server");
-            server = new Server(log);
+            server = new Server();
             Functions stub;
             try {
                 stub = (Functions) UnicastRemoteObject.exportObject(server, 0);
@@ -307,17 +316,10 @@ public class Server extends UnicastRemoteObject implements Functions
             System.out.println("-------------------------------------------------");
             System.out.println("");
             System.out.println("Server running...");
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             log.addErrorToLog(e.toString());
             e.printStackTrace();
-        } finally {
-            try {
-                log.closeLog();
-            } catch (Exception e){
-
-            }
         }
     }
 
@@ -325,15 +327,19 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that messages are updated
      */
     public void notifyMessageUpdated(Message m, UpdateType type) {
-        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.MESSAGE, ent, new NotifyCallback() {
-                @Override
-                public void notifyRemoved(String key) {
-                    removeClient(key);
-                }
-            }, type, m);
-            nt.run();
+        try {
+            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.MESSAGE, ent, new NotifyCallback() {
+                    @Override
+                    public void notifyRemoved(String key) {
+                        removeClient(key);
+                    }
+                }, type, m);
+                nt.run();
+            }
+        } catch (Exception e) {
+            log.addErrorToLog(e.toString());
         }
     }
 
@@ -341,15 +347,19 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that groups are updated
      */
     public void notifyGroupUpdated(Group g, UpdateType type) {
-        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.GROUP, ent, new NotifyCallback() {
-                @Override
-                public void notifyRemoved(String key) {
-                    removeClient(key);
-                }
-            }, type, g);
-            nt.run();
+        try {
+            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.GROUP, ent, new NotifyCallback() {
+                    @Override
+                    public void notifyRemoved(String key) {
+                        removeClient(key);
+                    }
+                }, type, g);
+                nt.run();
+            }
+        } catch (Exception e) {
+            log.addErrorToLog(e.toString());
         }
     }
 
@@ -357,19 +367,32 @@ public class Server extends UnicastRemoteObject implements Functions
      * Notify all connected clients, that user are updated
      */
     public void notifyUserUpdated(User u, UpdateType type) {
-        Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-        for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-            NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.USER, ent, new NotifyCallback() {
-                @Override
-                public void notifyRemoved(String key) {
-                    removeClient(key);
-                }
-            }, type, u);
-            nt.run();
+        try {
+            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
+            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.USER, ent, new NotifyCallback() {
+                    @Override
+                    public void notifyRemoved(String key) {
+                        removeClient(key);
+                    }
+                }, type, u);
+                nt.run();
+            }
+        } catch (Exception e) {
+            log.addErrorToLog(e.toString());
         }
     }
 
-    private synchronized void removeClient(String key){
-        clients.remove(key);
+    /**
+     * Synchronized remove client from client list
+     *
+     * @param key Client key
+     */
+    private synchronized void removeClient(String key) {
+        try {
+            clients.remove(key);
+        } catch (Exception e) {
+            log.addErrorToLog(e.toString());
+        }
     }
 }

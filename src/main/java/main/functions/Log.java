@@ -1,8 +1,6 @@
-package main;
+package main.functions;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -24,11 +22,12 @@ public class Log {
                 directory.mkdir();
             }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
-            //enabled = true;
+            enabled = true;
             System.out.println("Log ok!");
         } catch (Exception e) {
+            enabled = false;
             System.out.println("Could not open log!");
-            System.out.println("Log disabled!");
+            System.out.println("Local log disabled!");
         }
         ;
     }
@@ -36,15 +35,15 @@ public class Log {
     /**
      * Close log
      */
-    public void closeLog() {
+    private synchronized void closeLog() {
         if (enabled) {
             try {
                 logWriter.close();
-            } catch (Exception e) {
-                enabled = false;
-                System.out.println("Logging error!");
-                System.out.println("Log disabled!");
+            } catch (Exception ex) {
             }
+            enabled = false;
+            System.out.println("Logging error!");
+            System.out.println("Local log disabled!");
         }
     }
 
@@ -56,17 +55,12 @@ public class Log {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [INFO] " + message + "\n";
         executePost(mes);
         if (enabled) {
-            try {
-                logWriter.write(mes);
-            } catch (Exception e) {
-                enabled = false;
-                try {
-                    logWriter.close();
-                } catch (Exception ex) {
+            LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
+                @Override
+                public void notifyDisabled() {
+                    closeLog();
                 }
-                System.out.println("Logging error!");
-                System.out.println("Log disabled!");
-            }
+            });
         }
     }
 
@@ -78,17 +72,12 @@ public class Log {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [WARNING] " + message + "\n";
         executePost(mes);
         if (enabled) {
-            try {
-                logWriter.write(mes);
-            } catch (Exception e) {
-                enabled = false;
-                try {
-                    logWriter.close();
-                } catch (Exception ex) {
+            LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
+                @Override
+                public void notifyDisabled() {
+                    closeLog();
                 }
-                System.out.println("Logging error!");
-                System.out.println("Log disabled!");
-            }
+            });
         }
     }
 
@@ -100,17 +89,12 @@ public class Log {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
         executePost(mes);
         if (enabled) {
-            try {
-                logWriter.write(mes);
-            } catch (Exception e) {
-                enabled = false;
-                try {
-                    logWriter.close();
-                } catch (Exception ex) {
+            LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
+                @Override
+                public void notifyDisabled() {
+                    closeLog();
                 }
-                System.out.println("Logging error!");
-                System.out.println("Log disabled!");
-            }
+            });
         }
     }
 
@@ -119,7 +103,7 @@ public class Log {
      * @param urlParameters
      */
     public static void executePost(String urlParameters) {
-        LogThread lt = new LogThread(urlParameters);
+        LogThread lt = new LogThread(urlParameters, LogThread.LogType.REMOTE, null, null);
         lt.run();
 
     }
