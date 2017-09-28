@@ -10,7 +10,9 @@ import java.util.Calendar;
 public class Log {
 
     private FileWriter logWriter;
-    private boolean enabled = false;
+    private boolean localEnabled = false;
+    private boolean remoteEnabled = true;
+
 
     /**
      * Instantiate log
@@ -22,10 +24,9 @@ public class Log {
                 directory.mkdir();
             }
             logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
-            enabled = true;
             System.out.println("Log ok!");
         } catch (Exception e) {
-            enabled = false;
+            localEnabled = false;
             System.out.println("Could not open log!");
             System.out.println("Local log disabled!");
         }
@@ -36,12 +37,12 @@ public class Log {
      * Close log
      */
     private synchronized void closeLog() {
-        if (enabled) {
+        if (localEnabled) {
             try {
                 logWriter.close();
             } catch (Exception ex) {
             }
-            enabled = false;
+            localEnabled = false;
             System.out.println("Logging error!");
             System.out.println("Local log disabled!");
         }
@@ -54,7 +55,7 @@ public class Log {
     public void addToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [INFO] " + message + "\n";
         executePost(mes);
-        if (enabled) {
+        if (localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {
@@ -71,7 +72,7 @@ public class Log {
     public void addWarningToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [WARNING] " + message + "\n";
         executePost(mes);
-        if (enabled) {
+        if (localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {
@@ -88,7 +89,7 @@ public class Log {
     public void addErrorToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message + "\n";
         executePost(mes);
-        if (enabled) {
+        if (localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {
@@ -102,9 +103,11 @@ public class Log {
      * Execute post to logserver
      * @param urlParameters
      */
-    public static void executePost(String urlParameters) {
-        LogThread lt = new LogThread(urlParameters, LogThread.LogType.REMOTE, null, null);
-        lt.run();
+    private void executePost(String urlParameters) {
+        if (remoteEnabled) {
+            LogThread lt = new LogThread(urlParameters, LogThread.LogType.REMOTE, null, null);
+            lt.run();
+        }
 
     }
 }
