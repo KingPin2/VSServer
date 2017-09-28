@@ -1,10 +1,6 @@
 package main.rmiinterface;
 
-import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseObjectNotDeletedException;
-import main.database.exceptions.DatabaseObjectNotFoundException;
-import main.database.exceptions.DatabaseObjectNotSavedException;
-import main.objects.Board;
+import main.database.exceptions.*;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -21,9 +17,6 @@ public interface Functions extends Remote
     ArrayList<User> getUsers() throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     ArrayList<User> getUsersByLevel(int level) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     void saveUser(User user) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotSavedException;
-    Board getBoardById(int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
-    ArrayList<Board> getBoards() throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
-    void saveBoard(Board board) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotSavedException;
     Group getGroupById(int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     ArrayList<Group> getGroups() throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     ArrayList <Group> getGroupsByUser(User u) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
@@ -38,8 +31,7 @@ public interface Functions extends Remote
     User loginUser(String username, String password) throws RemoteException;
     Group getGroupByName(String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException;
     void deleteMessage(Message m) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
-    void deleteUser(User u) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
-    void deleteBoard(Board b) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
+    void deleteUser(User u) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException;
     void deleteGroup(Group g) throws RemoteException, DatabaseConnectionException, DatabaseObjectNotDeletedException;
     String connect(NotifyUpdate upd) throws RemoteException;
     void disconnect(String id) throws RemoteException;

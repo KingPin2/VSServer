@@ -1,6 +1,5 @@
 package main.database;
 
-import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -21,26 +20,6 @@ public class ObjectFactory {
      */
     public static User createUser(String name, String password, int level){
         return new User(name, password, level);
-    }
-
-    /**
-     * Create group board
-     * @param name
-     * @param group
-     * @return board
-     */
-    public static Board createGroupBoard(String name, Group group){
-        return new Board(name, group);
-    }
-
-    /**
-     * Create message board
-     * @param name
-     * @param user
-     * @return board
-     */
-    public static Board createUserBoard(String name, User user){
-        return new Board(name, user);
     }
 
     /**

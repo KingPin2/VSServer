@@ -1,15 +1,11 @@
 package main;
 
 import main.database.Database;
-import main.database.exceptions.DatabaseConnectionException;
-import main.database.exceptions.DatabaseObjectNotDeletedException;
-import main.database.exceptions.DatabaseObjectNotFoundException;
-import main.database.exceptions.DatabaseObjectNotSavedException;
+import main.database.exceptions.*;
 import main.functions.Log;
 import main.functions.NotifyCallback;
 import main.functions.NotifyThread;
 import main.functions.RandomString;
-import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -128,27 +124,6 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public Board getBoardById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
-        System.out.println("Get board by id: " + id);
-        log.addToLog("Get board by id: " + id);
-        return this.db.getBoardById(id);
-    }
-
-    @Override
-    public ArrayList<Board> getBoards() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
-        System.out.println("Get all boards");
-        log.addToLog("Get all boards");
-        return this.db.getBoards();
-    }
-
-    @Override
-    public void saveBoard(Board board) throws DatabaseConnectionException, DatabaseObjectNotSavedException {
-        System.out.println("Save board: " + board);
-        log.addToLog("Save board: " + board);
-        this.db.saveBoard(board);
-    }
-
-    @Override
     public Group getGroupById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
         System.out.println("Get group by id: " + id);
         log.addToLog("Get group by id: " + id);
@@ -247,17 +222,10 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     @Override
-    public void deleteUser(User u) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public void deleteUser(User u) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
         System.out.println("Delete user: " + u);
         log.addToLog("Delete user: " + u);
         this.db.deleteUser(u);
-    }
-
-    @Override
-    public void deleteBoard(Board b) throws DatabaseConnectionException, DatabaseObjectNotDeletedException {
-        System.out.println("Delete board: " + b);
-        log.addToLog("Delete board: " + b);
-        this.db.deleteBoard(b);
     }
 
     @Override

@@ -2,7 +2,6 @@ package main.database;
 
 import main.Server;
 import main.database.exceptions.*;
-import main.objects.Board;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -39,6 +38,7 @@ public class Database {
             if (!dbcon.isOpen()) {
                 dbcon.openDB();
                 initDB();
+                patchDB();
             }
         } catch (DatabaseConnectionException e) {
             server.log.addErrorToLog(e.toString());
@@ -70,9 +70,6 @@ public class Database {
             rs = dbcon.execute("SELECT * FROM 'Group';");
             rs.close();
             dbcon.free();
-            rs = dbcon.execute("SELECT * FROM 'Board';");
-            rs.close();
-            dbcon.free();
             rs = dbcon.execute("SELECT * FROM 'Message';");
             rs.close();
             dbcon.free();
@@ -96,10 +93,6 @@ public class Database {
             if (!testDatabase()) {
                 System.out.println("Initialize database.");
 
-                try {
-                    dbcon.execute("DROP TABLE `Board`;");
-                } catch (Exception e) {
-                }
                 try {
                     dbcon.execute("DROP TABLE `Group`;");
                 } catch (Exception e) {
@@ -132,7 +125,16 @@ public class Database {
             }
         } catch (Exception e) {
             server.log.addErrorToLog(e.toString());
-            e.printStackTrace();
+        }
+    }
+
+    public synchronized void patchDB(){
+        try {
+            ResultSet rs = dbcon.execute("SELECT * FROM 'Board';");
+            rs.close();
+            dbcon.free();
+            dbcon.execute("DROP TABLE `Board`;");
+        } catch (Exception e) {
         }
     }
 
@@ -312,7 +314,7 @@ public class Database {
      * @throws IllegalArgumentException
      * @throws DatabaseConnectionException
      */
-    public synchronized void deleteUser(User user) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public synchronized void deleteUser(User user) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -353,172 +355,14 @@ public class Database {
                     dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
                     server.notifyUserUpdated(user, UpdateType.DELETE);
                 }
+            } catch (DatabaseUserIsModException uim) {
+                throw uim;
             } catch (Exception e) {
                 server.log.addErrorToLog(e.toString());
                 throw new DatabaseObjectNotDeletedException();
             }
         } else {
             throw new IllegalArgumentException("User null.");
-        }
-    }
-
-    /**
-     * Get a board from database by id
-     *
-     * @param id BoardId
-     * @return Board
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     */
-    public synchronized Board getBoardById(int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException {
-        if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to database.");
-        }
-        try {
-            ResultSet rs = dbcon.execute("SELECT * FROM 'Board' WHERE id = '" + id + "';");
-            if (rs.next()) {
-                int gId = rs.getInt("groupId");
-                int uId = rs.getInt("userId");
-                Board b = new Board(rs.getInt("id"), rs.getString("name"), null, null);
-                rs.close();
-                dbcon.free();
-                if (gId != -1) {
-                    try {
-                        b.setGroup(getGroupById(gId));
-                    } catch (Exception e) {
-
-                    }
-                }
-                if (uId != -1) {
-                    try {
-                        b.setUser(getUserById(uId));
-                    } catch (Exception e) {
-
-                    }
-                }
-                return b;
-            } else {
-                rs.close();
-                throw new DatabaseObjectNotFoundException();
-            }
-        } catch (Exception e) {
-            dbcon.free();
-            server.log.addErrorToLog(e.toString());
-            throw new DatabaseObjectNotFoundException();
-        }
-    }
-
-    /**
-     * Get all boards from database
-     *
-     * @return Boardlist
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     */
-    public synchronized ArrayList<Board> getBoards() throws DatabaseObjectNotFoundException, DatabaseConnectionException {
-        if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to database.");
-        }
-        try {
-            ArrayList<Board> boards = new ArrayList<Board>();
-            ArrayList<Integer> gIds = new ArrayList<Integer>();
-            ArrayList<Integer> uIds = new ArrayList<Integer>();
-            ResultSet rs = dbcon.execute("SELECT * FROM 'Board';");
-            while (rs.next()) {
-                boards.add(new Board(rs.getInt("id"), rs.getString("name"), null, null));
-                gIds.add(rs.getInt("groupId"));
-                uIds.add(rs.getInt("userId"));
-            }
-            rs.close();
-            dbcon.free();
-            if (boards.size() > 0) {
-                for (int i = 0; i < boards.size(); i++) {
-                    if (gIds.get(i) != -1) {
-                        try {
-                            boards.get(i).setGroup(getGroupById(gIds.get(i)));
-                        } catch (Exception e) {
-
-                        }
-                    }
-                    if (uIds.get(i) != -1) {
-                        try {
-                            boards.get(i).setUser(getUserById(uIds.get(i)));
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }
-                return boards;
-            }
-            throw new DatabaseObjectNotFoundException();
-        } catch (Exception e) {
-            dbcon.free();
-            server.log.addErrorToLog(e.toString());
-            throw new DatabaseObjectNotFoundException();
-        }
-    }
-
-    /**
-     * Save a board in the database
-     *
-     * @param board Board
-     * @throws DatabaseObjectNotSavedException
-     * @throws IllegalArgumentException
-     * @throws DatabaseConnectionException
-     */
-    public synchronized void saveBoard(Board board) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
-        if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to database.");
-        }
-        if (board != null) {
-            try {
-                int uId = -1;
-                if (board.getUser() != null) {
-                    uId = board.getUser().getID();
-                }
-                int gId = -1;
-                if (board.getGroup() != null) {
-                    gId = board.getGroup().getID();
-                }
-                if (board.getID() == -1) {
-                    dbcon.execute("INSERT INTO 'Board' (name, groupId, userId) VALUES ('" + escapeSQLString(board.getName()) + "','" + gId + "','" + uId + "');");
-                } else {
-                    dbcon.execute("UPDATE 'Board' SET name = '" + escapeSQLString(board.getName()) + "', userId = '" + uId + "', groupId = '" + gId + "' WHERE id = '" + board.getID() + "';");
-                }
-            } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
-                throw new DatabaseObjectNotSavedException();
-            }
-        } else {
-            throw new IllegalArgumentException("Board null.");
-        }
-    }
-
-    /**
-     * Delete a board in the database
-     *
-     * @param board Board
-     * @throws DatabaseObjectNotSavedException
-     * @throws IllegalArgumentException
-     * @throws DatabaseConnectionException
-     */
-    public synchronized void deleteBoard(Board board) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
-        if (!dbcon.isOpen()) {
-            throw new DatabaseConnectionException("Not connected to database.");
-        }
-        if (board != null) {
-            try {
-                if (board.getID() == -1) {
-                    throw new DatabaseObjectNotDeletedException();
-                } else {
-                    dbcon.execute("DELETE FROM 'Board' WHERE id = '" + board.getID() + "';");
-                }
-            } catch (Exception e) {
-                server.log.addErrorToLog(e.toString());
-                throw new DatabaseObjectNotDeletedException();
-            }
-        } else {
-            throw new IllegalArgumentException("Board null.");
         }
     }
 
