@@ -295,7 +295,7 @@ public class Database {
      * @throws IllegalArgumentException
      * @throws DatabaseConnectionException
      */
-    public synchronized void deleteUser(User user, Functions rmi) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
+    public synchronized void deleteUser(String key, User user, Functions rmi) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -328,7 +328,7 @@ public class Database {
                     try {
                         ArrayList<Message> messages = getMessagesByUser(user, rmi);
                         for (Message m : messages) {
-                            deleteMessage(m);
+                            deleteMessage(key, m);
                         }
                     } catch (Exception e) {
 
@@ -602,7 +602,7 @@ public class Database {
      * @throws IllegalArgumentException
      * @throws DatabaseConnectionException
      */
-    public synchronized void deleteGroup(Group group, Functions rmi) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public synchronized void deleteGroup(String key, Group group, Functions rmi) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -614,7 +614,7 @@ public class Database {
                     try {
                         ArrayList<Message> messages = getMessagesByGroup(group, rmi);
                         for (Message m : messages) {
-                            deleteMessage(m);
+                            deleteMessage(key, m);
                         }
                     } catch (Exception e) {
 
@@ -949,7 +949,7 @@ public class Database {
      * @throws IllegalArgumentException
      * @throws DatabaseConnectionException
      */
-    public synchronized void saveMessage(Message message, Functions rmi) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
+    public synchronized void saveMessage(String key, Message message, Functions rmi) throws DatabaseObjectNotSavedException, IllegalArgumentException, DatabaseConnectionException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -971,6 +971,7 @@ public class Database {
                     m = message;
                     type = UpdateType.UPDATE;
                 }
+                m.setKey(key);
                 server.notifyMessageUpdated(m, type);
             } catch (Exception e) {
                 server.log.addErrorToLog("saveMessage: " + e.toString());
@@ -989,7 +990,7 @@ public class Database {
      * @throws IllegalArgumentException
      * @throws DatabaseConnectionException
      */
-    public synchronized void deleteMessage(Message message) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
+    public synchronized void deleteMessage(String key, Message message) throws IllegalArgumentException, DatabaseConnectionException, DatabaseObjectNotDeletedException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -1000,6 +1001,7 @@ public class Database {
                 } else {
                     dbcon.execute("DELETE FROM 'Message' WHERE id = '" + message.getID() + "';");
                 }
+                message.setKey(key);
                 server.notifyMessageUpdated(message, UpdateType.DELETE);
             } catch (Exception e) {
                 server.log.addErrorToLog("deleteMessage: " + e.toString());

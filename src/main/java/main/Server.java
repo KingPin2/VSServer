@@ -232,7 +232,7 @@ public class Server extends UnicastRemoteObject implements Functions {
         System.out.println("Save message: " + key + ";" + m);
         log.addToLog("Save message: " + key + ";" + m);
         checkAuthEditMessage(key,m);
-        this.db.saveMessage(m, rmi);
+        this.db.saveMessage(key, m, rmi);
     }
 
     @Override
@@ -248,7 +248,7 @@ public class Server extends UnicastRemoteObject implements Functions {
         System.out.println("Delete message: " + key + ";" + m);
         log.addToLog("Delete message: " + key + ";" + m);
         checkAuthEditMessage(key,m);
-        this.db.deleteMessage(m);
+        this.db.deleteMessage(key, m);
     }
 
     @Override
@@ -256,7 +256,7 @@ public class Server extends UnicastRemoteObject implements Functions {
         System.out.println("Delete user: " + key + ";" + u);
         log.addToLog("Delete user: " + key + ";" + u);
         checkAuthEditUser(key,u);
-        this.db.deleteUser(u, rmi);
+        this.db.deleteUser(key, u, rmi);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class Server extends UnicastRemoteObject implements Functions {
         System.out.println("Delete group: " + key + ";" + g);
         log.addToLog("Delete group: " + key + ";" + g);
         checkAuthEditGroup(key, g);
-        this.db.deleteGroup(g, rmi);
+        this.db.deleteGroup(key, g, rmi);
     }
 
     @Override
