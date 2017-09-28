@@ -380,6 +380,10 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
 
+    /**
+     * Main
+     * @param args
+     */
     public static void main(String args[]) {
         try {
             log = new Log();

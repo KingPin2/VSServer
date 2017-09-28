@@ -106,6 +106,7 @@ public class CachedFunctions{
     public void onUpdateMessage(Message m){
         if (m != null && mCache.containsKey(m.getID())){
             mCache.remove(m.getID());
+            mCache.put(m.getID(),m);
         }
     }
 
@@ -116,6 +117,7 @@ public class CachedFunctions{
     public void onUpdateGroup(Group g){
         if (g != null && gCache.containsKey(g.getID())){
             gCache.remove(g.getID());
+            gCache.put(g.getID(),g);
         }
     }
 
@@ -126,6 +128,7 @@ public class CachedFunctions{
     public void onUpdateUser(User u){
         if (u != null && uCache.containsKey(u.getID())){
             uCache.remove(u.getID());
+            uCache.put(u.getID(),u);
         }
     }
 }
