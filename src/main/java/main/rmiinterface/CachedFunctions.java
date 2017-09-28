@@ -5,13 +5,14 @@ import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
  * Created by Dominik on 29.09.2017.
  */
-public class CachedFunctions{
+public class CachedFunctions implements Serializable{
 
     Functions rmi;
     HashMap<Integer, User> uCache = new HashMap<Integer, User>();
