@@ -101,8 +101,12 @@ public class Message implements Serializable{
      * Set Message author
      */
     public void setAuthor(User author){
-        timestamp = System.currentTimeMillis();
-        this.author = author;
+        if (author.getID() != -1) {
+            timestamp = System.currentTimeMillis();
+            this.author = author;
+        } else {
+            throw new IllegalArgumentException("Save user first in database!");
+        }
     }
 
     /**
@@ -117,8 +121,12 @@ public class Message implements Serializable{
      * Set Message group
      */
     public void setGroup(Group group) {
+        if (group.getID() != -1) {
         timestamp = System.currentTimeMillis();
         this.group = group;
+        } else {
+            throw new IllegalArgumentException("Save group first in database!");
+        }
     }
 
     /**
@@ -129,6 +137,7 @@ public class Message implements Serializable{
         return timestamp;
     }
 
+
     @Override
     public String toString() {
         return "Message{" +
@@ -138,5 +147,20 @@ public class Message implements Serializable{
                 ", group=" + group +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Message message = (Message) o;
+
+        return id == message.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

@@ -167,4 +167,19 @@ public class Group implements Serializable{
                 ", members=" + members +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Group group = (Group) o;
+
+        return id == group.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
