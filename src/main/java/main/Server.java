@@ -256,7 +256,7 @@ public class Server extends UnicastRemoteObject implements Functions {
             clients.remove(id);
             log.addToLog("Disconnect: " + id);
         } catch (Exception e) {
-            log.addErrorToLog(e.toString());
+            log.addErrorToLog("Disconnect: " + e.toString());
         }
     }
 
@@ -286,7 +286,7 @@ public class Server extends UnicastRemoteObject implements Functions {
             System.out.println("Server running...");
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
-            log.addErrorToLog(e.toString());
+            log.addErrorToLog("Main: " + e.toString());
             e.printStackTrace();
         }
     }
@@ -307,7 +307,8 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            log.addErrorToLog(e.toString());
+            e.printStackTrace();
+            log.addErrorToLog("notifyMessageUpdated: " + e.toString());
         }
     }
 
@@ -327,7 +328,8 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            log.addErrorToLog(e.toString());
+            e.printStackTrace();
+            log.addErrorToLog("notifyGroupUpdated: " + e.toString());
         }
     }
 
@@ -347,7 +349,8 @@ public class Server extends UnicastRemoteObject implements Functions {
                 nt.run();
             }
         } catch (Exception e) {
-            log.addErrorToLog(e.toString());
+            e.printStackTrace();
+            log.addErrorToLog("notifyUserUpdated: " + e.toString());
         }
     }
 
@@ -360,7 +363,7 @@ public class Server extends UnicastRemoteObject implements Functions {
         try {
             clients.remove(key);
         } catch (Exception e) {
-            log.addErrorToLog(e.toString());
+            log.addErrorToLog("removeClient: " + e.toString());
         }
     }
 }
