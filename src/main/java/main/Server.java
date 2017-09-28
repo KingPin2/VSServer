@@ -330,7 +330,7 @@ public class Server extends UnicastRemoteObject implements Functions
             NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.MESSAGE, ent, new NotifyCallback() {
                 @Override
                 public void notifyRemoved(String key) {
-                    clients.remove(key);
+                    removeClient(key);
                 }
             }, type, m);
             nt.run();
@@ -346,7 +346,7 @@ public class Server extends UnicastRemoteObject implements Functions
             NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.GROUP, ent, new NotifyCallback() {
                 @Override
                 public void notifyRemoved(String key) {
-                    clients.remove(key);
+                    removeClient(key);
                 }
             }, type, g);
             nt.run();
@@ -362,10 +362,14 @@ public class Server extends UnicastRemoteObject implements Functions
             NotifyThread nt = new NotifyThread(NotifyThread.NotifyType.USER, ent, new NotifyCallback() {
                 @Override
                 public void notifyRemoved(String key) {
-                    clients.remove(key);
+                    removeClient(key);
                 }
             }, type, u);
             nt.run();
         }
+    }
+
+    private synchronized void removeClient(String key){
+        clients.remove(key);
     }
 }
