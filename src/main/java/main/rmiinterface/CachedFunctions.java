@@ -12,7 +12,7 @@ import java.util.HashMap;
 /**
  * Created by Dominik on 29.09.2017.
  */
-public class CachedFunctions implements Serializable{
+public class CachedFunctions implements Serializable {
 
     Functions rmi;
     HashMap<Integer, User> uCache = new HashMap<Integer, User>();
@@ -21,6 +21,7 @@ public class CachedFunctions implements Serializable{
 
     /**
      * Instantiate
+     *
      * @param rmi RMI Interface
      */
     public CachedFunctions(Functions rmi) {
@@ -32,8 +33,9 @@ public class CachedFunctions implements Serializable{
 
     /**
      * Get a user by id (cached)
+     *
      * @param key Auth key
-     * @param id userId
+     * @param id  userId
      * @return User
      * @throws RemoteException
      * @throws DatabaseObjectNotFoundException
@@ -41,8 +43,8 @@ public class CachedFunctions implements Serializable{
      * @throws UserAuthException
      */
     public User getUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        if (!uCache.containsKey(id)){
-            uCache.put(id,rmi.getUserById(key,id));
+        if (!uCache.containsKey(id)) {
+            uCache.put(id, rmi.getUserById(key, id));
         }
         return uCache.get(id);
     }
@@ -50,8 +52,9 @@ public class CachedFunctions implements Serializable{
 
     /**
      * Get a simple user by id (cached)
+     *
      * @param key Auth key
-     * @param id userId
+     * @param id  userId
      * @return User
      * @throws RemoteException
      * @throws DatabaseObjectNotFoundException
@@ -59,16 +62,17 @@ public class CachedFunctions implements Serializable{
      * @throws UserAuthException
      */
     public User getSimpleUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        if (!uCache.containsKey(id)){
-            uCache.put(id,rmi.getSimpleUserById(key,id));
+        if (!uCache.containsKey(id)) {
+            uCache.put(id, rmi.getSimpleUserById(key, id));
         }
         return uCache.get(id);
     }
 
     /**
      * Get a group by id (cached)
+     *
      * @param key Auth key
-     * @param id groupId
+     * @param id  groupId
      * @return Group
      * @throws RemoteException
      * @throws DatabaseObjectNotFoundException
@@ -76,16 +80,17 @@ public class CachedFunctions implements Serializable{
      * @throws UserAuthException
      */
     public Group getGroupById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        if (!gCache.containsKey(id)){
-            gCache.put(id,rmi.getGroupById(key,id));
+        if (!gCache.containsKey(id)) {
+            gCache.put(id, rmi.getGroupById(key, id));
         }
         return gCache.get(id);
     }
 
     /**
      * Get message by id (cached)
-     * @param key Auth key
-     * @param id messageId
+     *
+     * @param key  Auth key
+     * @param id   messageId
      * @param cRMI RMI functions
      * @return Message
      * @throws RemoteException
@@ -94,42 +99,63 @@ public class CachedFunctions implements Serializable{
      * @throws UserAuthException
      */
     public Message getMessageById(String key, int id, CachedFunctions cRMI) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
-        if (!mCache.containsKey(id)){
-            mCache.put(id,rmi.getMessageById(key,id, cRMI));
+        if (!mCache.containsKey(id)) {
+            mCache.put(id, rmi.getMessageById(key, id, cRMI));
         }
         return mCache.get(id);
     }
 
     /**
      * Remove from cache, if message is updated
+     *
      * @param m Message
      */
-    public void onUpdateMessage(Message m){
-        if (m != null && mCache.containsKey(m.getID())){
-            mCache.remove(m.getID());
-            mCache.put(m.getID(),m);
+    public void onUpdateMessage(Message m, UpdateType type) {
+        try {
+            if (m != null && mCache.containsKey(m.getID())) {
+                mCache.remove(m.getID());
+            }
+            if (type != UpdateType.DELETE) {
+                mCache.put(m.getID(), m);
+            }
+        } catch (Exception e) {
+            System.err.println(e.toString());
         }
     }
 
     /**
      * Remove from cache, if group is updated
+     *
      * @param g Group
      */
-    public void onUpdateGroup(Group g){
-        if (g != null && gCache.containsKey(g.getID())){
-            gCache.remove(g.getID());
-            gCache.put(g.getID(),g);
+    public void onUpdateGroup(Group g, UpdateType type) {
+        try {
+            if (g != null && gCache.containsKey(g.getID())) {
+                gCache.remove(g.getID());
+            }
+            if (type != UpdateType.DELETE) {
+                gCache.put(g.getID(), g);
+            }
+        } catch (Exception e) {
+            System.err.println(e.toString());
         }
     }
 
     /**
      * Remove from cache, if user is updated
+     *
      * @param u User
      */
-    public void onUpdateUser(User u){
-        if (u != null && uCache.containsKey(u.getID())){
-            uCache.remove(u.getID());
-            uCache.put(u.getID(),u);
+    public void onUpdateUser(User u, UpdateType type) {
+        try {
+            if (u != null && uCache.containsKey(u.getID())) {
+                uCache.remove(u.getID());
+            }
+            if (type != UpdateType.DELETE) {
+                uCache.put(u.getID(), u);
+            }
+        } catch (Exception e) {
+            System.err.println(e.toString());
         }
     }
 }

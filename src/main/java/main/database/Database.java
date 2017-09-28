@@ -582,7 +582,7 @@ public class Database {
                 try {
                     groups.add(getGroupById(i));
                 } catch (Exception e) {
-
+                    //Nothing to do here
                 }
             }
             if (groups.size() > 0) {
@@ -623,6 +623,7 @@ public class Database {
                         try {
                             groups.get(i).setModerator(getSimpleUserById(mIds.get(i)));
                         } catch (Exception e) {
+                            //Nothing to do here
                         }
                     }
                     groups.get(i).setMembers(getGroupMembers(groups.get(i).getID()));
@@ -676,7 +677,11 @@ public class Database {
                     saveGroupMembers(groupId, group.getMembers());
                 }
                 server.notifyGroupUpdated(getGroupByName(group.getName()), type);
-                saveUser(ObjectFactory.createUser(group.getName(),group.getName(),0));
+                try {
+                    getSimpleUserByName(group.getName());
+                } catch (DatabaseObjectNotFoundException dbonfe) {
+                    saveUser(ObjectFactory.createUser(group.getName(), group.getName(), 0));
+                }
             } catch (Exception e) {
                 Server.log.addErrorToLog("saveGroup: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
@@ -709,13 +714,17 @@ public class Database {
                             deleteMessage(key, m);
                         }
                     } catch (Exception e) {
-
+                        //Nothing to do here
                     }
 
                     dbcon.execute("DELETE FROM 'Group' WHERE id = '" + group.getID() + "';");
                     deleteGroupMembers(group.getID());
                     server.notifyGroupUpdated(group, UpdateType.DELETE);
-                    deleteUser(key,getUserByName(group.getName()),cRMI);
+                    try {
+                        deleteUser(key, getUserByName(group.getName()), cRMI);
+                    } catch (DatabaseObjectNotDeletedException e) {
+                        Server.log.addErrorToLog("deleteGroup: Group user not deleted.");
+                    }
                 }
             } catch (Exception e) {
                 Server.log.addErrorToLog("deleteGroup: " + e.toString());
@@ -877,7 +886,7 @@ public class Database {
             if (rs.next()) {
                 int gId = rs.getInt("groupId");
                 int aId = rs.getInt("authorId");
-                Message m = new Message(rs.getInt("id"), rs.getString("message"), null, null, rs.getLong("timestamp"),cRMI);
+                Message m = new Message(rs.getInt("id"), rs.getString("message"), null, null, rs.getLong("timestamp"), cRMI);
                 rs.close();
                 dbcon.free();
                 if (gId != -1) {
@@ -929,7 +938,7 @@ public class Database {
             dbcon.free();
             for (Integer i : mIds) {
                 try {
-                    messages.add(getMessageById(i,cRMI));
+                    messages.add(getMessageById(i, cRMI));
                 } catch (Exception e) {
 
                 }
@@ -968,7 +977,7 @@ public class Database {
             dbcon.free();
             for (Integer i : mIds) {
                 try {
-                    messages.add(getMessageById(i,cRMI));
+                    messages.add(getMessageById(i, cRMI));
                 } catch (Exception e) {
 
                 }
