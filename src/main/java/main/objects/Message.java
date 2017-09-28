@@ -27,6 +27,7 @@ public class Message implements Serializable{
         setID(id);
         setAuthor(author);
         setGroup(group);
+        setMessage(message);
         this.timestamp = timestamp;
         this.rmi = rmi;
     }
