@@ -157,6 +157,22 @@ public class Message implements Serializable{
         return timestamp;
     }
 
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setAuthorId(Integer authorId) {
+        this.authorId = authorId;
+    }
+
 
     @Override
     public String toString() {

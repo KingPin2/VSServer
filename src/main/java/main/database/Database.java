@@ -586,7 +586,6 @@ public class Database {
                 }
                 server.notifyGroupUpdated(getGroupByName(group.getName()), type);
             } catch (Exception e) {
-                e.printStackTrace();
                 server.log.addErrorToLog("saveGroup: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
             }
@@ -790,14 +789,14 @@ public class Database {
                 dbcon.free();
                 if (gId != -1) {
                     try {
-                        m.setGroup(getGroupById(gId));
+                        m.setGroupId(gId);
                     } catch (Exception e) {
 
                     }
                 }
                 if (aId != -1) {
                     try {
-                        m.setAuthor(getUserById(aId));
+                        m.setAuthorId(aId);
                     } catch (Exception e) {
 
                     }
@@ -919,14 +918,14 @@ public class Database {
                 for (int i = 0; i < messages.size(); i++) {
                     if (gIds.get(i) != -1) {
                         try {
-                            messages.get(i).setGroup(getGroupById(gIds.get(i)));
+                            messages.get(i).setGroupId(gIds.get(i));
                         } catch (Exception e) {
 
                         }
                     }
                     if (aIds.get(i) != -1) {
                         try {
-                            messages.get(i).setAuthor(getUserById(aIds.get(i)));
+                            messages.get(i).setAuthorId(aIds.get(i));
                         } catch (Exception e) {
 
                         }
@@ -958,16 +957,8 @@ public class Database {
             try {
                 Message m = null;
                 UpdateType type = UpdateType.UNDEF;
-                int aId = -1;
-                if (message.getAuthor() != null) {
-                    aId = message.getAuthor().getID();
-                }
-                int gId = -1;
-                if (message.getGroup() != null) {
-                    gId = message.getGroup().getID();
-                }
                 if (message.getID() == -1) {
-                    ResultSet rs = dbcon.execute("INSERT INTO 'Message' (message, groupId, authorId, timestamp) VALUES ('" + escapeSQLString(message.getMessage()) + "','" + gId + "','" + aId + "','" + message.getTimestamp() + "');");
+                    ResultSet rs = dbcon.execute("INSERT INTO 'Message' (message, groupId, authorId, timestamp) VALUES ('" + escapeSQLString(message.getMessage()) + "','" + message.getGroupId() + "','" + message.getAuthorId() + "','" + message.getTimestamp() + "');");
                     if (rs != null) {
                         try {
                             m = getMessageById(rs.getInt(1), rmi);
@@ -976,7 +967,7 @@ public class Database {
                         }
                     }
                 } else {
-                    dbcon.execute("UPDATE 'Message' SET message = '" + escapeSQLString(message.getMessage()) + "', authorId = '" + aId + "', groupId = '" + gId + "', timestamp = '" + message.getTimestamp() + "' WHERE id = '" + message.getID() + "';");
+                    dbcon.execute("UPDATE 'Message' SET message = '" + escapeSQLString(message.getMessage()) + "', authorId = '" + message.getAuthorId() + "', groupId = '" + message.getGroupId() + "', timestamp = '" + message.getTimestamp() + "' WHERE id = '" + message.getID() + "';");
                     m = message;
                     type = UpdateType.UPDATE;
                 }
@@ -1045,7 +1036,6 @@ public class Database {
             }
         } catch (Exception e) {
             server.log.addErrorToLog("loginUser: " + e.toString());
-            e.printStackTrace();
         }
         return null;
     }

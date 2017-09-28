@@ -50,7 +50,6 @@ public class DBConnection {
             working = false;
         } catch ( Exception e ) {
             working = false;
-            e.printStackTrace();
             throw new DatabaseConnectionException("Could not open database.");
         }
         System.out.println("Opened database successfully.");

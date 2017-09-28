@@ -142,7 +142,6 @@ public class Group implements Serializable{
                     }
                     this.members.add(member);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             } else {
                 throw new IllegalArgumentException("Save user first in database!");
@@ -162,7 +161,6 @@ public class Group implements Serializable{
                 this.members.remove(member);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -284,7 +284,6 @@ public class Server extends UnicastRemoteObject implements Functions {
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             log.addErrorToLog("Main: " + e.toString());
-            e.printStackTrace();
         }
     }
 
