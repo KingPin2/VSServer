@@ -17,10 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class Server extends UnicastRemoteObject implements Functions {
@@ -296,12 +293,13 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyMessageUpdated(Message m, UpdateType type) {
         try {
-            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.MESSAGE, ent, new NotifyCallback() {
+            Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
+
+            while (iter.hasNext()) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.MESSAGE, iter.next(), new NotifyCallback() {
                     @Override
                     public void notifyRemoved(String key) {
-                        removeClient(key);
+                        iter.remove();
                     }
                 }, type, m);
                 nt.run();
@@ -317,12 +315,13 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyGroupUpdated(Group g, UpdateType type) {
         try {
-            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.GROUP, ent, new NotifyCallback() {
+            Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
+
+            while (iter.hasNext()) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.GROUP, iter.next(), new NotifyCallback() {
                     @Override
                     public void notifyRemoved(String key) {
-                        removeClient(key);
+                        iter.remove();
                     }
                 }, type, g);
                 nt.run();
@@ -338,12 +337,13 @@ public class Server extends UnicastRemoteObject implements Functions {
      */
     public void notifyUserUpdated(User u, UpdateType type) {
         try {
-            Set<Map.Entry<String, NotifyUpdate>> entrys = clients.entrySet();
-            for (Map.Entry<String, NotifyUpdate> ent : entrys) {
-                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.USER, ent, new NotifyCallback() {
+            Iterator<Map.Entry<String, NotifyUpdate>> iter = clients.entrySet().iterator();
+
+            while (iter.hasNext()) {
+                NotifyThread nt = new NotifyThread(log, NotifyThread.NotifyType.USER, iter.next(), new NotifyCallback() {
                     @Override
                     public void notifyRemoved(String key) {
-                        removeClient(key);
+                        iter.remove();
                     }
                 }, type, u);
                 nt.run();
@@ -351,19 +351,6 @@ public class Server extends UnicastRemoteObject implements Functions {
         } catch (Exception e) {
             e.printStackTrace();
             log.addErrorToLog("notifyUserUpdated: " + e.toString());
-        }
-    }
-
-    /**
-     * Synchronized remove client from client list
-     *
-     * @param key Client key
-     */
-    private synchronized void removeClient(String key) {
-        try {
-            clients.remove(key);
-        } catch (Exception e) {
-            log.addErrorToLog("removeClient: " + e.toString());
         }
     }
 }
