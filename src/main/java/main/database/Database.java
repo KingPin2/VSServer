@@ -81,22 +81,22 @@ public class Database {
                 Server.log.addToLog("Initialize database.");
                 try {
                     dbcon.execute("DROP TABLE `Group`;");
-                } catch (DatabaseDropException e) {
+                } catch (Exception e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `Group_User`;");
-                } catch (DatabaseDropException e) {
+                } catch (Exception e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `Message`;");
-                } catch (DatabaseDropException e) {
+                } catch (Exception e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `User`;");
-                } catch (DatabaseDropException e) {
+                } catch (Exception e) {
                     //Nothing to do here
                 }
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");
@@ -140,6 +140,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getUserById: " + e.toString());
@@ -170,6 +173,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getSimpleUserById: " + e.toString());
@@ -200,6 +206,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getUserByName: " + e.toString());
@@ -230,6 +239,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getSimpleUserByName: " + e.toString());
@@ -259,6 +271,9 @@ public class Database {
             if (users.size() > 0) {
                 return users;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
@@ -290,6 +305,9 @@ public class Database {
                 return users;
             }
             throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getSimpleUsers: " + e.toString());
@@ -320,6 +338,9 @@ public class Database {
             if (users.size() > 0) {
                 return users;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
@@ -467,6 +488,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getGroupById: " + e.toString());
@@ -506,6 +530,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getGroupByName: " + e.toString());
@@ -550,6 +577,9 @@ public class Database {
                 return groups;
             }
             throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getGroupsByUser: " + e.toString());
@@ -587,6 +617,9 @@ public class Database {
             if (groups.size() > 0) {
                 return groups;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
@@ -629,6 +662,9 @@ public class Database {
                 }
                 return groups;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
@@ -740,10 +776,9 @@ public class Database {
      *
      * @param groupId groupId
      * @return groupMembers
-     * @throws DatabaseConnectionException     Not connected to the database
-     * @throws DatabaseObjectNotFoundException Group members does not exist
+     * @throws DatabaseConnectionException Not connected to the database
      */
-    private synchronized ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException, DatabaseObjectNotFoundException {
+    private synchronized ArrayList<User> getGroupMembers(int groupId) throws DatabaseConnectionException {
         if (!dbcon.isOpen()) {
             throw new DatabaseConnectionException("Not connected to database.");
         }
@@ -908,6 +943,9 @@ public class Database {
                 rs.close();
                 throw new DatabaseObjectNotFoundException();
             }
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getMessageById: " + e.toString());
@@ -947,6 +985,9 @@ public class Database {
                 return messages;
             }
             throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
+            throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
             Server.log.addErrorToLog("getMessagesByUser: " + e.toString());
@@ -985,6 +1026,9 @@ public class Database {
             if (messages.size() > 0) {
                 return messages;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();
@@ -1035,6 +1079,9 @@ public class Database {
                 }
                 return messages;
             }
+            throw new DatabaseObjectNotFoundException();
+        } catch (DatabaseObjectNotFoundException e) {
+            dbcon.free();
             throw new DatabaseObjectNotFoundException();
         } catch (Exception e) {
             dbcon.free();

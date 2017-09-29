@@ -181,19 +181,21 @@ class DBConnection {
                     try {
                         statement.executeUpdate(sql);
                         con.commit();
+                        working = false;
                     } catch (Exception e) {
+                        working = false;
                         throw new DatabaseCreateException();
                     }
-                    working = false;
                     return null;
                 case "DROP":
                     try {
                         statement.executeUpdate(sql);
                         con.commit();
+                        working = false;
                     } catch (Exception e) {
+                        working = false;
                         throw new DatabaseDropException();
                     }
-                    working = false;
                     return null;
                 default:
                     working = false;
