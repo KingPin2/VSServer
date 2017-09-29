@@ -24,6 +24,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 
+/**
+ * Server
+ * @author D.Bergum
+ */
 public class Server extends UnicastRemoteObject implements Functions {
 
     private static Server server;

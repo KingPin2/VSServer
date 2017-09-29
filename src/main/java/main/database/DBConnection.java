@@ -9,8 +9,8 @@ import main.exceptions.DatabaseException;
 import java.sql.*;
 
 /**
- * @author D.bergum
- *         <p>
+ * @author D.Bergum
+ *
  *         Manage database connection
  */
 class DBConnection {
