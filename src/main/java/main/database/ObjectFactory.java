@@ -7,15 +7,16 @@ import main.objects.User;
 import java.util.ArrayList;
 
 /**
+ * Object factory for objects
  * Created by Dominik on 18.08.2017.
  */
 public class ObjectFactory {
 
     /**
      * Create user
-     * @param name
-     * @param password
-     * @param level
+     * @param name Name
+     * @param password Password
+     * @param level Level
      * @return user
      */
     public static User createUser(String name, String password, int level){
@@ -24,8 +25,8 @@ public class ObjectFactory {
 
     /**
      * Create message
-     * @param message
-     * @param author
+     * @param message Message
+     * @param author Author
      * @return message
      */
     public static Message createMessage(String message, User author){
@@ -34,9 +35,9 @@ public class ObjectFactory {
 
     /**
      * Create group message
-     * @param message
-     * @param author
-     * @param group
+     * @param message Message
+     * @param author Author
+     * @param group Group
      * @return message
      */
     public static Message createGroupMessage(String message, User author, Group group){
@@ -45,8 +46,8 @@ public class ObjectFactory {
 
     /**
      * Create empty group
-     * @param name
-     * @param moderator
+     * @param name Name
+     * @param moderator Moderator
      * @return group
      */
     public static Group createEmptyGroup(String name, User moderator){
@@ -55,9 +56,9 @@ public class ObjectFactory {
 
     /**
      * Create group with members
-     * @param name
-     * @param moderator
-     * @param members
+     * @param name Name
+     * @param moderator Moderator
+     * @param members Members
      * @return group
      */
     public static Group createGroupWithMembers(String name, User moderator, ArrayList<User> members){

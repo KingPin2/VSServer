@@ -9,7 +9,7 @@ import java.sql.*;
 /**
  * @author D.bergum
  *
- * Manage main.main.database connection
+ * Manage database connection
  */
 class DBConnection {
 
@@ -27,8 +27,8 @@ class DBConnection {
     }
 
     /**
-     * Connect to main.main.database
-     * @throws DatabaseConnectionException DatabaseConnectionException
+     * Connect to database
+     * @throws DatabaseConnectionException Could not connect to database
      */
     void openDB() throws DatabaseConnectionException {
         try {
@@ -59,35 +59,7 @@ class DBConnection {
     }
 
     /**
-     * Close connection to main.main.database
-     * @throws DatabaseConnectionException DatabaseConnectionException
-     */
-    void closeDB() throws DatabaseConnectionException {
-        try {
-            while (working) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e){
-                    Server.log.addErrorToLog("closeDB: " + e.toString());
-                }
-            }
-            working = true;
-            if (isOpen()) {
-                statement.close();
-                con.close();
-            }
-            con = null;
-            working = false;
-        } catch (Exception e) {
-            working = false;
-            Server.log.addErrorToLog("closeDB: " + e.toString());
-            throw new DatabaseConnectionException("Could not close database.");
-        }
-        Server.log.addToLog("Closed database successfully.");
-    }
-
-    /**
-     * Check if connected to main.main.database
+     * Check if connected to database
      * @return connected
      */
     boolean isOpen() {
@@ -105,14 +77,13 @@ class DBConnection {
      * Execute sql query
      * @param sql sql query
      * @return ResultSet
-     * @throws DatabaseConnectionException DatabaseConnectionException
+     * @throws DatabaseConnectionException Not connected to database
      */
     private ResultSet executeQuery(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
             try {
                 return statement.executeQuery(sql);
             } catch (SQLException e) {
-                Server.log.addErrorToLog("executeQuery: " + e.toString());
                 throw new DatabaseException("Can't execute query.");
             }
         } else {
@@ -124,7 +95,7 @@ class DBConnection {
     /**
      * Execute sql update
      * @param sql sql update
-     * @throws DatabaseConnectionException DatabaseConnectionException
+     * @throws DatabaseConnectionException Not connected to database
      */
     private void executeUpdate(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
@@ -132,7 +103,6 @@ class DBConnection {
                 statement.executeUpdate(sql);
                 con.commit();
             } catch (SQLException e) {
-                Server.log.addErrorToLog("executeUpdate: " + e.toString());
                 throw new DatabaseException("Can't execute update.");
             }
         } else {
@@ -144,7 +114,7 @@ class DBConnection {
     /**
      * Execute sql insert
      * @param sql sql insert
-     * @throws DatabaseConnectionException DatabaseConnectionException
+     * @throws DatabaseConnectionException Not connected to database
      */
     private ResultSet executeInsert(String sql) throws DatabaseConnectionException, DatabaseException {
         if (isOpen()) {
@@ -152,7 +122,6 @@ class DBConnection {
                 statement.executeUpdate(sql);
                 con.commit();
             } catch (SQLException e) {
-                Server.log.addErrorToLog("executeInsert: " + e.toString());
                 throw new DatabaseException("Can't execute insert.");
             }
             try {
@@ -171,8 +140,8 @@ class DBConnection {
      * Call free() after execute SELECT and closing ResultSet
      * @param sql sql statement
      * @return ResultSet, if SELECT; null else
-     * @throws DatabaseException DatabaseException
-     * @throws DatabaseConnectionException DatabaseConnectionException
+     * @throws DatabaseException Invalid query
+     * @throws DatabaseConnectionException Not connected to database
      */
     ResultSet execute(String sql) throws DatabaseException, DatabaseConnectionException {
         try {
@@ -205,7 +174,6 @@ class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e){
-                        Server.log.addErrorToLog("execute: " + e.toString());
                         throw new DatabaseException("Error creating table");
                     }
                     working = false;
@@ -215,7 +183,6 @@ class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e){
-                        Server.log.addErrorToLog("execute: " + e.toString());
                         throw new DatabaseException("Error dropping table");
                     }
                     working = false;
