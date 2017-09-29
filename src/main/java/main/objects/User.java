@@ -3,8 +3,9 @@ package main.objects;
 import java.io.Serializable;
 
 /**
- * @author D.Bergum
- *         A user object as saved in main.database
+ * User object
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class User implements Serializable {
 

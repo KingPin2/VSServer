@@ -3,10 +3,10 @@ package main.exceptions;
 import java.io.Serializable;
 
 /**
- * Created by Dominik on 08.07.2017.
+ * @author Dominik Bergum, 3603490
  */
 public class UserAuthException extends Exception implements Serializable {
-    public UserAuthException(){
+    public UserAuthException() {
         super();
     }
 }

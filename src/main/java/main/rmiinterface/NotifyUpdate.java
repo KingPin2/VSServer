@@ -8,7 +8,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * Created by Dominik on 26.09.2017.
+ * Notify update interface
+ *
+ * @author Dominik Bergum, 3603490
  */
 public interface NotifyUpdate extends Remote {
     void onUpdateGroup(Group g, UpdateType type) throws RemoteException;

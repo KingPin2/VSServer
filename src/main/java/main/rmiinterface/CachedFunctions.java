@@ -12,7 +12,9 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
- * Created by Dominik on 29.09.2017.
+ * Cache RMI function calls
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class CachedFunctions implements Serializable {
 

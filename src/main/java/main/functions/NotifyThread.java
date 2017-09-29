@@ -9,7 +9,9 @@ import main.rmiinterface.UpdateType;
 import java.util.Map;
 
 /**
- * Created by Dominik on 26.09.2017.
+ * Notify thread
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class NotifyThread implements Runnable {
 

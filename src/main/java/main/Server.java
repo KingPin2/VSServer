@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * Server
- * @author D.Bergum
+ * @author Dominik Bergum, 3603490
  */
 public class Server extends UnicastRemoteObject implements Functions {
 

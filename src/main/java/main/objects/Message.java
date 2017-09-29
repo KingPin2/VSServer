@@ -5,7 +5,9 @@ import main.rmiinterface.CachedFunctions;
 import java.io.Serializable;
 
 /**
- * Created by Dominik on 18.08.2017.
+ * Message object
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class Message implements Serializable {
 

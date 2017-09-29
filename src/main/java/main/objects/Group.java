@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Created by Dominik on 18.08.2017.
+ * Group object
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class Group implements Serializable {
 

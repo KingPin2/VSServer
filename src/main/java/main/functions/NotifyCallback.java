@@ -1,7 +1,9 @@
 package main.functions;
 
 /**
- * Created by Dominik on 27.09.2017.
+ * Notify callback
+ *
+ * @author Dominik Bergum, 3603490
  */
 public interface NotifyCallback {
     void notifyRemoved(String key);

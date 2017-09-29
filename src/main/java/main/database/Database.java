@@ -12,8 +12,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 /**
- * @author D.Bergum
- *         Manage object to database and database to object
+ * Object <-> Database Mapping
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class Database {
 

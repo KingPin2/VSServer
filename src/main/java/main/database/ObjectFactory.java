@@ -7,8 +7,9 @@ import main.objects.User;
 import java.util.ArrayList;
 
 /**
- * Object factory for objects
- * Created by Dominik on 18.08.2017.
+ * Object factory for database objects
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class ObjectFactory {
 

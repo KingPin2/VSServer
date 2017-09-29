@@ -3,10 +3,10 @@ package main.exceptions;
 import java.io.Serializable;
 
 /**
- * Created by Dominik on 08.07.2017.
+ * @author Dominik Bergum, 3603490
  */
-public class DatabaseConnectionException extends Exception implements Serializable{
-    public DatabaseConnectionException(String message){
+public class DatabaseConnectionException extends Exception implements Serializable {
+    public DatabaseConnectionException(String message) {
         super(message);
     }
 }

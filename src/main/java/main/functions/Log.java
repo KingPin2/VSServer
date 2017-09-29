@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
- * Created by Dominik on 26.09.2017.
+ * Log functions
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class Log {
 

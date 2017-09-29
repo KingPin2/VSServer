@@ -5,7 +5,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by Dominik on 26.09.2017.
+ * Log thread
+ *
+ * @author Dominik Bergum, 3603490
  */
 public class LogThread implements Runnable {
 

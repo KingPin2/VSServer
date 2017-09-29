@@ -3,10 +3,10 @@ package main.exceptions;
 import java.io.Serializable;
 
 /**
- * Created by Dominik on 08.07.2017.
+ * @author Dominik Bergum, 3603490
  */
-public class DatabaseUserIsModException extends Exception implements Serializable{
-    public DatabaseUserIsModException(){
+public class DatabaseUserIsModException extends Exception implements Serializable {
+    public DatabaseUserIsModException() {
         super();
     }
 }
