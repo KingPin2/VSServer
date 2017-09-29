@@ -1,6 +1,8 @@
 package main.rmiinterface;
 
-import main.exceptions.*;
+import main.exceptions.DatabaseConnectionException;
+import main.exceptions.DatabaseObjectNotFoundException;
+import main.exceptions.UserAuthException;
 import main.objects.Group;
 import main.objects.Message;
 import main.objects.User;
@@ -14,10 +16,10 @@ import java.util.HashMap;
  */
 public class CachedFunctions implements Serializable {
 
-    Functions rmi;
-    HashMap<Integer, User> uCache = new HashMap<Integer, User>();
-    HashMap<Integer, Group> gCache = new HashMap<Integer, Group>();
-    HashMap<Integer, Message> mCache = new HashMap<Integer, Message>();
+    private Functions rmi;
+    private HashMap<Integer, User> uCache = new HashMap<Integer, User>();
+    private HashMap<Integer, Group> gCache = new HashMap<Integer, Group>();
+    private HashMap<Integer, Message> mCache = new HashMap<Integer, Message>();
 
     /**
      * Instantiate
@@ -37,10 +39,10 @@ public class CachedFunctions implements Serializable {
      * @param key Auth key
      * @param id  userId
      * @return User
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     public User getUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         if (!uCache.containsKey(id)) {
@@ -56,10 +58,10 @@ public class CachedFunctions implements Serializable {
      * @param key Auth key
      * @param id  userId
      * @return User
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     public User getSimpleUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         if (!uCache.containsKey(id)) {
@@ -74,10 +76,10 @@ public class CachedFunctions implements Serializable {
      * @param key Auth key
      * @param id  groupId
      * @return Group
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     public Group getGroupById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         if (!gCache.containsKey(id)) {
@@ -93,10 +95,10 @@ public class CachedFunctions implements Serializable {
      * @param id   messageId
      * @param cRMI RMI functions
      * @return Message
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     public Message getMessageById(String key, int id, CachedFunctions cRMI) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         if (!mCache.containsKey(id)) {

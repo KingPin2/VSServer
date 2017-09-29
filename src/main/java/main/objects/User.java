@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * @author D.Bergum
- * A user object as saved in main.database
+ *         A user object as saved in main.database
  */
 public class User implements Serializable {
 
@@ -15,24 +15,26 @@ public class User implements Serializable {
 
     /**
      * Create User (with ID -1 -> Save as new user in main.database)
-     * @param name
-     * @param password
-     * @param level
-     * @throws IllegalArgumentException
+     *
+     * @param name     Username
+     * @param password Password
+     * @param level    Level
+     * @throws IllegalArgumentException User or Password null; Level negative
      */
-    public User(String name, String password, int level) throws IllegalArgumentException{
+    public User(String name, String password, int level) throws IllegalArgumentException {
         this(-1, name, password, level);
     }
 
     /**
      * Create User (with given ID -> Update user in main.database)
-     * @param id
-     * @param name
-     * @param password
-     * @param level
-     * @throws IllegalArgumentException
+     *
+     * @param id       Id
+     * @param name     Username
+     * @param password Password
+     * @param level    Level
+     * @throws IllegalArgumentException User or Password null; Level or Id negative
      */
-    public User(int id, String name, String password, int level) throws IllegalArgumentException{
+    public User(int id, String name, String password, int level) throws IllegalArgumentException {
         setID(id);
         setName(name);
         setPassword(password);
@@ -41,22 +43,25 @@ public class User implements Serializable {
 
     /**
      * Get user id
+     *
      * @return id
      */
-    public int getID(){
+    public int getID() {
         return this.id;
     }
 
     /**
      * Get user name
+     *
      * @return name
      */
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
     /**
      * Get user password
+     *
      * @return password
      */
     public String getPassword() {
@@ -65,28 +70,31 @@ public class User implements Serializable {
 
     /**
      * Checks if given password equals saved password
+     *
      * @param password password
      * @return password equals
      */
-    public boolean checkPassword(String password){
+    public boolean checkPassword(String password) {
         return this.password.equals(password);
     }
 
     /**
      * Get user level
+     *
      * @return level
      */
-    public int getLevel(){
+    public int getLevel() {
         return this.level;
     }
 
     /**
      * Set user id
+     *
      * @param id Positive or -1
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException ID negative
      */
     private void setID(int id) throws IllegalArgumentException {
-        if (id < -1){
+        if (id < -1) {
             throw new IllegalArgumentException("ID negative.");
         }
         this.id = id;
@@ -94,11 +102,12 @@ public class User implements Serializable {
 
     /**
      * Set user name
+     *
      * @param name Not null or empty
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Name null or empty
      */
     public void setName(String name) throws IllegalArgumentException {
-        if (name == null || name.isEmpty()){
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name null or empty.");
         }
         this.name = name;
@@ -106,11 +115,12 @@ public class User implements Serializable {
 
     /**
      * Set user password
+     *
      * @param password Not null or empty
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Password null or empty
      */
     public void setPassword(String password) throws IllegalArgumentException {
-        if (password == null || password.isEmpty()){
+        if (password == null || password.isEmpty()) {
             throw new IllegalArgumentException("Password null or empty.");
         }
         this.password = password;
@@ -118,16 +128,22 @@ public class User implements Serializable {
 
     /**
      * Set user level
+     *
      * @param level Positive
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException Level negative
      */
     public void setLevel(int level) throws IllegalArgumentException {
-        if (level < 0){
+        if (level < 0) {
             throw new IllegalArgumentException("Level negative.");
         }
         this.level = level;
     }
 
+    /**
+     * To String
+     *
+     * @return String
+     */
     @Override
     public String toString() {
         return "User{" +
@@ -138,6 +154,12 @@ public class User implements Serializable {
                 '}';
     }
 
+    /**
+     * Equals
+     *
+     * @param o Object
+     * @return This equals o
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -148,6 +170,11 @@ public class User implements Serializable {
         return id == user.id;
     }
 
+    /**
+     * Hashcode
+     *
+     * @return Hashcode
+     */
     @Override
     public int hashCode() {
         return id;

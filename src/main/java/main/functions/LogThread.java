@@ -9,20 +9,24 @@ import java.net.URL;
  */
 public class LogThread implements Runnable {
 
-    public enum LogType{
+    public enum LogType {
         LOCAL, REMOTE
     }
 
-    String mes;
-    LogType type;
-    FileWriter logWriter;
-    LogCallback cb;
+    private String mes;
+    private LogType type;
+    private FileWriter logWriter;
+    private LogCallback cb;
 
     /**
      * Initiate log thread
-     * @param mes
+     *
+     * @param mes       Message
+     * @param cb        LogCallback
+     * @param logWriter FileWriter
+     * @param type      LogType
      */
-    public LogThread(String mes, LogType type, FileWriter logWriter, LogCallback cb){
+    public LogThread(String mes, LogType type, FileWriter logWriter, LogCallback cb) {
         this.mes = mes;
         this.type = type;
         this.logWriter = logWriter;

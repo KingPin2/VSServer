@@ -18,15 +18,18 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class Server extends UnicastRemoteObject implements Functions {
 
-    public static Server server;
+    private static Server server;
     public static Log log;
 
-    public static final int ADMIN = 2;
+    private static final int ADMIN = 2;
 
     private Database db;
 
@@ -37,8 +40,8 @@ public class Server extends UnicastRemoteObject implements Functions {
     /**
      * Server instance
      *
-     * @throws DatabaseConnectionException
-     * @throws RemoteException
+     * @throws DatabaseConnectionException DatabaseConnectionException
+     * @throws RemoteException             RemoteException
      */
     public Server() throws DatabaseConnectionException, RemoteException {
         super();
@@ -50,8 +53,8 @@ public class Server extends UnicastRemoteObject implements Functions {
      *
      * @param id userId
      * @return User
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
      */
     @Override
     public User getUserById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -63,13 +66,14 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Get a simple user by id
+     *
      * @param key Client key
-     * @param id userID
+     * @param id  userID
      * @return User
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     @Override
     public User getSimpleUserById(String key, int id) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -82,8 +86,8 @@ public class Server extends UnicastRemoteObject implements Functions {
      *
      * @param username
      * @return User
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
      */
     @Override
     public User getUserByName(String key, String username) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -95,13 +99,14 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Get a simple user by name
-     * @param key Client key
+     *
+     * @param key  Client key
      * @param name username
      * @return User
-     * @throws RemoteException
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
-     * @throws UserAuthException
+     * @throws RemoteException                 RemoteException
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
      */
     @Override
     public User getSimpleUserByName(String key, String name) throws RemoteException, DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -112,9 +117,9 @@ public class Server extends UnicastRemoteObject implements Functions {
     /**
      * Get all user
      *
-     * @return Userlist
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
+     * @return Users
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
      */
     @Override
     public ArrayList<User> getUsers(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -124,25 +129,13 @@ public class Server extends UnicastRemoteObject implements Functions {
     }
 
     /**
-     * Test
-     *
-     * @param testID
-     * @return Hallo Welt
-     */
-    @Override
-    public String test(int testID) {
-        log.addToLog("Test");
-        return "Hallo Welt!";
-    }
-
-    /**
      * Get all user with specified level
      *
-     * @param key
-     * @param level
-     * @return Userlist
-     * @throws DatabaseObjectNotFoundException
-     * @throws DatabaseConnectionException
+     * @param key   Key
+     * @param level Levek
+     * @return Users
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
      */
     @Override
     public ArrayList<User> getUsersByLevel(String key, int level) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
@@ -153,19 +146,30 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Save a user
-     * @param key
-     * @param u
-     * @throws DatabaseConnectionException
-     * @throws DatabaseObjectNotSavedException
-     * @throws UserAuthException
+     *
+     * @param key Key
+     * @param u   User
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws DatabaseObjectNotSavedException DatabaseObjectNotSavedException
+     * @throws UserAuthException               UserAuthException
      */
     @Override
     public void saveUser(String key, User u) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
         log.addToLog("Save user: " + key + ";" + u);
-        checkAuthEditUser(key,u);
+        checkAuthEditUser(key, u);
         this.db.saveUser(u);
     }
 
+    /**
+     * Get group by id
+     *
+     * @param key Key
+     * @param id  Id
+     * @return Group
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public Group getGroupById(String key, int id) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get group by id: " + key + ";" + id);
@@ -173,6 +177,15 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getGroupById(id);
     }
 
+    /**
+     * Get groups
+     *
+     * @param key Key
+     * @return Groups
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Group> getGroups(String key) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get all groups: " + key);
@@ -180,6 +193,16 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getGroups();
     }
 
+    /**
+     * Get groups by user
+     *
+     * @param key Key
+     * @param u   User
+     * @return Groups
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Group> getGroupsByUser(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get groups by user: " + key + ";" + u);
@@ -187,6 +210,16 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getGroupsByUser(u);
     }
 
+    /**
+     * Get groups by moderator
+     *
+     * @param key Key
+     * @param u   User
+     * @return Groups
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Group> getGroupsByModerator(String key, User u) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get groups by moderator: " + key + ";" + u);
@@ -194,6 +227,15 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getGroupsByModerator(u);
     }
 
+    /**
+     * Save group
+     *
+     * @param key Key
+     * @param g   Group
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws DatabaseObjectNotSavedException DatabaseObjectNotSavedException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public void saveGroup(String key, Group g) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
         log.addToLog("Save group: " + key + ";" + g);
@@ -201,6 +243,14 @@ public class Server extends UnicastRemoteObject implements Functions {
         this.db.saveGroup(g);
     }
 
+    /**
+     * Get users not in group
+     *
+     * @param key   Key
+     * @param group Group
+     * @return Users
+     * @throws UserAuthException UserAuthException
+     */
     @Override
     public ArrayList<User> getUsersNotInGroup(String key, Group group) throws UserAuthException {
         log.addToLog("Get user not in group: " + key + ";" + group);
@@ -208,6 +258,17 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getUsersNotInGroup(group);
     }
 
+    /**
+     * Get message by id
+     *
+     * @param key  Key
+     * @param id   Id
+     * @param cRMI CachedFunctions
+     * @return Message
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public Message getMessageById(String key, int id, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get message by id: " + key + ";" + id);
@@ -217,49 +278,101 @@ public class Server extends UnicastRemoteObject implements Functions {
         return m;
     }
 
+    /**
+     * Get messages by user
+     *
+     * @param key  Key
+     * @param u    User
+     * @param cRMI CachedFunctions
+     * @return Messages
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Message> getMessagesByUser(String key, User u, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get messages by user: " + key + ";" + u);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessagesByUser(u,cRMI)){
+        for (Message m : this.db.getMessagesByUser(u, cRMI)) {
             m.setKey(key);
             messages.add(m);
         }
         return messages;
     }
 
+    /**
+     * Get messages
+     *
+     * @param key  Key
+     * @param cRMI CachedFunctions
+     * @return Messages
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Message> getMessages(String key, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get all messages: " + key);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessages(cRMI)){
+        for (Message m : this.db.getMessages(cRMI)) {
             m.setKey(key);
             messages.add(m);
         }
         return messages;
     }
 
+    /**
+     * Get messages by group
+     *
+     * @param key  Key
+     * @param g    Group
+     * @param cRMI CachedFunctions
+     * @return Messages
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public ArrayList<Message> getMessagesByGroup(String key, Group g, CachedFunctions cRMI) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get messages by group: " + key + ";" + g);
         checkAuth(key);
         ArrayList<Message> messages = new ArrayList<Message>();
-        for (Message m : this.db.getMessagesByGroup(g, cRMI)){
+        for (Message m : this.db.getMessagesByGroup(g, cRMI)) {
             m.setKey(key);
             messages.add(m);
         }
         return messages;
     }
 
+    /**
+     * Save message
+     *
+     * @param key  Key
+     * @param m    Message
+     * @param cRMI CachedFunctions
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws DatabaseObjectNotSavedException DatabaseObjectNotSavedException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public void saveMessage(String key, Message m, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotSavedException, UserAuthException {
         log.addToLog("Save message: " + key + ";" + m);
-        checkAuthEditMessage(key,m);
+        checkAuthEditMessage(key, m);
         this.db.saveMessage(key, m, cRMI);
     }
 
+    /**
+     * Get group by name
+     *
+     * @param key  Key
+     * @param name Name
+     * @return Grouop
+     * @throws DatabaseObjectNotFoundException DatabaseObjectNotFoundException
+     * @throws DatabaseConnectionException     DatabaseConnectionException
+     * @throws UserAuthException               UserAuthException
+     */
     @Override
     public Group getGroupByName(String key, String name) throws DatabaseObjectNotFoundException, DatabaseConnectionException, UserAuthException {
         log.addToLog("Get group by name: " + key + ";" + name);
@@ -267,20 +380,50 @@ public class Server extends UnicastRemoteObject implements Functions {
         return this.db.getGroupByName(name);
     }
 
+    /**
+     * Delete message
+     *
+     * @param key Key
+     * @param m   Message
+     * @throws DatabaseConnectionException       DatabaseConnectionException
+     * @throws DatabaseObjectNotDeletedException DatabaseObjectNotDeletedException
+     * @throws UserAuthException                 UserAuthException
+     */
     @Override
     public void deleteMessage(String key, Message m) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
         log.addToLog("Delete message: " + key + ";" + m);
-        checkAuthEditMessage(key,m);
+        checkAuthEditMessage(key, m);
         this.db.deleteMessage(key, m);
     }
 
+    /**
+     * Delete user
+     *
+     * @param key  Key
+     * @param u    User
+     * @param cRMI CachedFunctions
+     * @throws DatabaseConnectionException       DatabaseConnectionException
+     * @throws DatabaseObjectNotDeletedException DatabaseObjectNotDeletedException
+     * @throws DatabaseUserIsModException        DatabaseUserIsModException
+     * @throws UserAuthException                 UserAuthException
+     */
     @Override
     public void deleteUser(String key, User u, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, DatabaseUserIsModException, UserAuthException {
         log.addToLog("Delete user: " + key + ";" + u);
-        checkAuthEditUser(key,u);
+        checkAuthEditUser(key, u);
         this.db.deleteUser(key, u, cRMI);
     }
 
+    /**
+     * Delete group
+     *
+     * @param key  Key
+     * @param g    Group
+     * @param cRMI CachedFunctions
+     * @throws DatabaseConnectionException       DatabaseConnectionException
+     * @throws DatabaseObjectNotDeletedException DatabaseObjectNotDeletedException
+     * @throws UserAuthException                 UserAuthException
+     */
     @Override
     public void deleteGroup(String key, Group g, CachedFunctions cRMI) throws DatabaseConnectionException, DatabaseObjectNotDeletedException, UserAuthException {
         log.addToLog("Delete group: " + key + ";" + g);
@@ -288,6 +431,13 @@ public class Server extends UnicastRemoteObject implements Functions {
         this.db.deleteGroup(key, g, cRMI);
     }
 
+    /**
+     * Connect a client
+     *
+     * @param upd NotifyUpdate
+     * @return Key
+     * @throws RemoteException RemoteException
+     */
     @Override
     public String connect(NotifyUpdate upd) throws RemoteException {
         String random = rs.nextString();
@@ -301,6 +451,12 @@ public class Server extends UnicastRemoteObject implements Functions {
         return random;
     }
 
+    /**
+     * Disconnect a client
+     *
+     * @param key Key
+     * @throws RemoteException RemoteException
+     */
     @Override
     public void disconnect(String key) throws RemoteException {
         try {
@@ -312,6 +468,14 @@ public class Server extends UnicastRemoteObject implements Functions {
         }
     }
 
+    /**
+     * Login
+     *
+     * @param key      Key
+     * @param username Username
+     * @param password Password
+     * @return User (or null)
+     */
     @Override
     public User login(String key, String username, String password) {
         User erg = null;
@@ -325,6 +489,11 @@ public class Server extends UnicastRemoteObject implements Functions {
         return erg;
     }
 
+    /**
+     * Logout
+     *
+     * @param key Key
+     */
     @Override
     public void logout(String key) {
         if (user.containsKey(key)) {
@@ -333,46 +502,86 @@ public class Server extends UnicastRemoteObject implements Functions {
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuthReadMoreUser(String key) throws UserAuthException {
         checkAuth(key);
         User auth = user.get(key);
-        if (auth.getLevel() != ADMIN){
+        if (auth.getLevel() != ADMIN) {
             throw new UserAuthException();
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @param u   User to read
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuthReadSingleUser(String key, User u) throws UserAuthException {
         checkAuth(key);
         User auth = user.get(key);
-        if (!auth.equals(u) && auth.getLevel() != ADMIN){
+        if (!auth.equals(u) && auth.getLevel() != ADMIN) {
             throw new UserAuthException();
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @param u   User to edit
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuthEditUser(String key, User u) throws UserAuthException {
         checkAuth(key);
         User auth = user.get(key);
-        if (auth.getLevel() != ADMIN){
+        if (auth.getLevel() != ADMIN) {
             throw new UserAuthException();
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @param g   Group to edit
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuthEditGroup(String key, Group g) throws UserAuthException {
         checkAuth(key);
         User auth = user.get(key);
-        if (auth.getLevel() != ADMIN){
+        if (auth.getLevel() != ADMIN) {
             throw new UserAuthException();
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @param m   Message to edit
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuthEditMessage(String key, Message m) throws UserAuthException {
         checkAuth(key);
         User auth = user.get(key);
-        if (auth.getLevel() != ADMIN && m.getAuthorId() != auth.getID()){
+        if (auth.getLevel() != ADMIN && m.getAuthorId() != auth.getID()) {
             throw new UserAuthException();
         }
     }
 
+    /**
+     * Check auth
+     *
+     * @param key Key
+     * @throws UserAuthException Not allowed
+     */
     private void checkAuth(String key) throws UserAuthException {
         if (!user.containsKey(key)) {
             throw new UserAuthException();
@@ -382,7 +591,8 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Main
-     * @param args
+     *
+     * @param args Arguments
      */
     public static void main(String args[]) {
         try {
@@ -406,6 +616,9 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Notify all connected clients, that messages are updated
+     *
+     * @param m    Message
+     * @param type UpdateType
      */
     public void notifyMessageUpdated(Message m, UpdateType type) {
         try {
@@ -428,6 +641,9 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Notify all connected clients, that groups are updated
+     *
+     * @param g    Group
+     * @param type UpdateType
      */
     public void notifyGroupUpdated(Group g, UpdateType type) {
         try {
@@ -450,6 +666,9 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Notify all connected clients, that user are updated
+     *
+     * @param u    User
+     * @param type UpdateType
      */
     public void notifyUserUpdated(User u, UpdateType type) {
         try {

@@ -17,18 +17,23 @@ public class NotifyThread implements Runnable {
         USER, GROUP, MESSAGE
     }
 
-    Log log;
-    NotifyType type;
-    Map.Entry<String, NotifyUpdate> ent;
-    NotifyCallback cb;
-    UpdateType uType;
-    Object obj;
+    private Log log;
+    private NotifyType type;
+    private Map.Entry<String, NotifyUpdate> ent;
+    private NotifyCallback cb;
+    private UpdateType uType;
+    private Object obj;
 
 
     /**
      * Initiate log thread
      *
-     * @param type
+     * @param type  NotifyType
+     * @param cb    NotifyCallback
+     * @param ent   NotifyUpdate
+     * @param log   Log
+     * @param obj   Object
+     * @param uType UpdateType
      */
     public NotifyThread(Log log, NotifyType type, Map.Entry<String, NotifyUpdate> ent, NotifyCallback cb, UpdateType uType, Object obj) {
         this.type = type;
@@ -46,14 +51,14 @@ public class NotifyThread implements Runnable {
     public void run() {
         try {
             if (type == NotifyType.MESSAGE) {
-                ent.getValue().onUpdateMessage((Message) obj,uType);
+                ent.getValue().onUpdateMessage((Message) obj, uType);
             } else if (type == NotifyType.GROUP) {
-                ent.getValue().onUpdateGroup((Group) obj,uType);
+                ent.getValue().onUpdateGroup((Group) obj, uType);
             } else if (type == NotifyType.USER) {
-                ent.getValue().onUpdateUser((User) obj,uType);
+                ent.getValue().onUpdateUser((User) obj, uType);
             }
         } catch (Exception e) {
-            log.addErrorToLog("notifyThread: " + ent.getKey() + "; " + type.toString() + "; "+ e.toString());
+            log.addErrorToLog("notifyThread: " + ent.getKey() + "; " + type.toString() + "; " + e.toString());
             cb.notifyRemoved(ent.getKey());
         }
     }
