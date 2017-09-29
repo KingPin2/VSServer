@@ -2,6 +2,8 @@ package main.database;
 
 import main.Server;
 import main.exceptions.DatabaseConnectionException;
+import main.exceptions.DatabaseCreateException;
+import main.exceptions.DatabaseDropException;
 import main.exceptions.DatabaseException;
 
 import java.sql.*;
@@ -149,7 +151,7 @@ class DBConnection {
      * @throws DatabaseException           Invalid query
      * @throws DatabaseConnectionException Not connected to database
      */
-    ResultSet execute(String sql) throws DatabaseException, DatabaseConnectionException {
+    ResultSet execute(String sql) throws DatabaseException, DatabaseConnectionException, DatabaseDropException, DatabaseCreateException {
         try {
             while (working) {
                 try {
@@ -180,7 +182,7 @@ class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e) {
-                        throw new DatabaseException("Error creating table");
+                        throw new DatabaseCreateException();
                     }
                     working = false;
                     return null;
@@ -189,7 +191,7 @@ class DBConnection {
                         statement.executeUpdate(sql);
                         con.commit();
                     } catch (Exception e) {
-                        throw new DatabaseException("Error dropping table");
+                        throw new DatabaseDropException();
                     }
                     working = false;
                     return null;
@@ -197,6 +199,8 @@ class DBConnection {
                     working = false;
                     throw new DatabaseException("Invalid query: " + pref);
             }
+        } catch (DatabaseDropException dbd) {
+            throw dbd;
         } catch (Exception e) {
             Server.log.addErrorToLog("execute: " + e.toString());
             working = false;

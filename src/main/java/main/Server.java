@@ -591,12 +591,28 @@ public class Server extends UnicastRemoteObject implements Functions {
 
     /**
      * Main
+     * -localLog Enable local log
+     * -remoteLog Enable remote log
      *
      * @param args Arguments
      */
     public static void main(String args[]) {
         try {
-            log = new Log();
+            boolean local = false;
+            boolean remote = false;
+            try {
+                for (String arg : args) {
+                    if (arg.contains("-localLog")) {
+                        local = true;
+                    }
+                    if (arg.contains("-remoteLog")) {
+                        remote = true;
+                    }
+                }
+            } catch (Exception e) {
+                //Nothing to do here
+            }
+            log = new Log(local, remote);
             log.addToLog("Starting server");
             server = new Server();
             Functions stub;

@@ -1,6 +1,7 @@
 package main.functions;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -11,41 +12,53 @@ public class Log {
 
     private FileWriter logWriter;
 
+    //Enable log to console
     private boolean consoleEnabled = true;
-    private boolean localEnabled = false;
-    private boolean remoteEnabled = true;
 
+    //Enable log to local file
+    private boolean localEnabled = false;
+
+    //Enable log to webserver
+    private boolean remoteEnabled = false;
+
+    public Log() {
+        this(false, false);
+    }
 
     /**
      * Instantiate log
      */
-    public Log() {
-        try {
-            File directory = new File("log");
-            if (!directory.exists()) {
-                directory.mkdir();
+    public Log(boolean localEnabled, boolean remoteEnabled) {
+        this.localEnabled = localEnabled;
+        this.remoteEnabled = remoteEnabled;
+
+        if (this.localEnabled) {
+            try {
+                File directory = new File("log");
+                if (!directory.exists()) {
+                    directory.mkdir();
+                }
+                logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
+                System.out.println("Log ok!");
+            } catch (Exception e) {
+                this.localEnabled = false;
+                System.err.println("Could not open log!");
+                System.err.println("Local log disabled!");
             }
-            logWriter = new FileWriter("log/log_" + new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()) + ".txt", true);
-            System.out.println("Log ok!");
-        } catch (Exception e) {
-            localEnabled = false;
-            System.err.println("Could not open log!");
-            System.err.println("Local log disabled!");
         }
-        ;
     }
 
     /**
      * Close log
      */
     private synchronized void closeLog() {
-        if (localEnabled) {
+        if (this.localEnabled) {
             try {
                 logWriter.close();
             } catch (Exception ex) {
                 System.err.println(ex.toString());
             }
-            localEnabled = false;
+            this.localEnabled = false;
             System.err.println("Logging error!");
             System.err.println("Local log disabled!");
         }
@@ -58,16 +71,16 @@ public class Log {
      */
     public void addToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [INFO] " + message;
-        if (consoleEnabled) {
+        if (this.consoleEnabled) {
             System.out.println(mes);
         }
 
         mes = mes + "\n";
 
-        if (remoteEnabled) {
+        if (this.remoteEnabled) {
             executePost(mes);
         }
-        if (localEnabled) {
+        if (this.localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {
@@ -85,16 +98,16 @@ public class Log {
      */
     public void addWarningToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [WARNING] " + message;
-        if (consoleEnabled) {
+        if (this.consoleEnabled) {
             System.out.println(mes);
         }
 
         mes = mes + "\n";
 
-        if (remoteEnabled) {
+        if (this.remoteEnabled) {
             executePost(mes);
         }
-        if (localEnabled) {
+        if (this.localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {
@@ -112,16 +125,16 @@ public class Log {
      */
     public void addErrorToLog(String message) {
         String mes = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ": [ERROR] " + message;
-        if (consoleEnabled) {
+        if (this.consoleEnabled) {
             System.out.println(mes);
         }
 
         mes = mes + "\n";
 
-        if (remoteEnabled) {
+        if (this.remoteEnabled) {
             executePost(mes);
         }
-        if (localEnabled) {
+        if (this.localEnabled) {
             LogThread lt = new LogThread(mes, LogThread.LogType.LOCAL, logWriter, new LogCallback() {
                 @Override
                 public void notifyDisabled() {

@@ -81,22 +81,22 @@ public class Database {
                 Server.log.addToLog("Initialize database.");
                 try {
                     dbcon.execute("DROP TABLE `Group`;");
-                } catch (Exception e) {
+                } catch (DatabaseDropException e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `Group_User`;");
-                } catch (Exception e) {
+                } catch (DatabaseDropException e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `Message`;");
-                } catch (Exception e) {
+                } catch (DatabaseDropException e) {
                     //Nothing to do here
                 }
                 try {
                     dbcon.execute("DROP TABLE `User`;");
-                } catch (Exception e) {
+                } catch (DatabaseDropException e) {
                     //Nothing to do here
                 }
                 dbcon.execute("CREATE TABLE IF NOT EXISTS `Board` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `name` TEXT NOT NULL UNIQUE, `groupId` INTEGER NOT NULL, `userId` INTEGER NOT NULL );");

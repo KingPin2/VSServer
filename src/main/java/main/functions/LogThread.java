@@ -67,6 +67,7 @@ public class LogThread implements Runnable {
         } else {
             try {
                 logWriter.write(mes);
+                logWriter.flush();
             } catch (Exception e) {
                 cb.notifyDisabled();
             }
