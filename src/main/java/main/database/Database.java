@@ -259,7 +259,7 @@ public class Database {
         }
         try {
             ArrayList<User> users = new ArrayList<User>();
-            ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Level != '0';");
             while (rs.next()) {
                 users.add(new User(rs.getInt("id"), rs.getString("name"), rs.getString("password"), rs.getInt("level")));
             }
@@ -289,7 +289,7 @@ public class Database {
         }
         try {
             ArrayList<User> users = new ArrayList<User>();
-            ResultSet rs = dbcon.execute("SELECT * FROM 'User';");
+            ResultSet rs = dbcon.execute("SELECT * FROM 'User' WHERE Level != '0';");
             while (rs.next()) {
                 users.add(new User(rs.getInt("id"), rs.getString("name"), "NONE", 42));
             }
@@ -362,13 +362,15 @@ public class Database {
                     dbcon.execute("UPDATE 'User' SET name = '" + escapeSQLString(user.getName()) + "', password = '" + escapeSQLString(user.getPassword()) + "', level = '" + user.getLevel() + "' WHERE id = '" + user.getID() + "';");
                     type = UpdateType.UPDATE;
                 }
-                try {
-                    Group broadcast = getGroupByName("Broadcast");
-                    broadcast.addMember(getUserByName(user.getName()));
-                    saveGroup(broadcast);
-                } catch (Exception e) {
+                if (user.getLevel() != 0) {
+                    try {
+                        Group broadcast = getGroupByName("Broadcast");
+                        broadcast.addMember(getUserByName(user.getName()));
+                        saveGroup(broadcast);
+                    } catch (Exception e) {
+                    }
+                    server.notifyUserUpdated(getUserByName(user.getName()), type);
                 }
-                server.notifyUserUpdated(getUserByName(user.getName()), type);
             } catch (Exception e) {
                 Server.log.addErrorToLog("saveUser: " + e.toString());
                 throw new DatabaseObjectNotSavedException();
@@ -425,7 +427,9 @@ public class Database {
 
                     }
                     dbcon.execute("DELETE FROM 'User' WHERE id = '" + user.getID() + "';");
-                    server.notifyUserUpdated(user, UpdateType.DELETE);
+                    if (user.getLevel() != 0) {
+                        server.notifyUserUpdated(user, UpdateType.DELETE);
+                    }
                 }
             } catch (DatabaseUserIsModException uim) {
                 throw uim;
